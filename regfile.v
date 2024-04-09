@@ -1,0 +1,127 @@
+module regfile (
+	clock,
+	ctrl_writeEnable, ctrl_reset, ctrl_writeReg,
+	ctrl_readRegA, ctrl_readRegB, data_writeReg,
+	data_readRegA, data_readRegB
+);
+
+	input clock, ctrl_writeEnable, ctrl_reset;
+	input [4:0] ctrl_writeReg, ctrl_readRegA, ctrl_readRegB;
+	input [31:0] data_writeReg;
+
+	output [31:0] data_readRegA, data_readRegB;
+
+	// add your code here
+
+	wire [31:0] A, B, write;
+
+	decoder32 regA(A, ctrl_readRegA, 1'b1);
+	decoder32 regB(B, ctrl_readRegB, 1'b1); 
+	decoder32 writeReg(write, ctrl_writeReg, ctrl_writeEnable); // instead of and gate done decode with write_enable
+
+	wire clk; 
+
+	assign clk = clock;
+
+	wire [31:0] r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31;
+
+	register reg0(clk, data_writeReg, write[0], 1'b1, r0);
+	register reg1(clk, data_writeReg, write[1], ctrl_reset, r1);
+	register reg2(clk, data_writeReg, write[2], ctrl_reset, r2);
+	register reg3(clk, data_writeReg, write[3], ctrl_reset, r3);
+	register reg4(clk, data_writeReg, write[4], ctrl_reset, r4);
+	register reg5(clk, data_writeReg, write[5], ctrl_reset, r5);
+	register reg6(clk, data_writeReg, write[6], ctrl_reset, r6);
+	register reg7(clk, data_writeReg, write[7], ctrl_reset, r7);
+	register reg8(clk, data_writeReg, write[8], ctrl_reset, r8);
+	register reg9(clk, data_writeReg, write[9], ctrl_reset, r9);
+	register reg10(clk, data_writeReg, write[10], ctrl_reset, r10);
+	register reg11(clk, data_writeReg, write[11], ctrl_reset, r11);
+	register reg12(clk, data_writeReg, write[12], ctrl_reset, r12);
+	register reg13(clk, data_writeReg, write[13], ctrl_reset, r13);
+	register reg14(clk, data_writeReg, write[14], ctrl_reset, r14);
+	register reg15(clk, data_writeReg, write[15], ctrl_reset, r15);
+	register reg16(clk, data_writeReg, write[16], ctrl_reset, r16);
+	register reg17(clk, data_writeReg, write[17], ctrl_reset, r17);
+	register reg18(clk, data_writeReg, write[18], ctrl_reset, r18);
+	register reg19(clk, data_writeReg, write[19], ctrl_reset, r19);
+	register reg20(clk, data_writeReg, write[20], ctrl_reset, r20);
+	register reg21(clk, data_writeReg, write[21], ctrl_reset, r21);
+	register reg22(clk, data_writeReg, write[22], ctrl_reset, r22);
+	register reg23(clk, data_writeReg, write[23], ctrl_reset, r23);
+	register reg24(clk, data_writeReg, write[24], ctrl_reset, r24);
+	register reg25(clk, data_writeReg, write[25], ctrl_reset, r25);
+	register reg26(clk, data_writeReg, write[26], ctrl_reset, r26);
+	register reg27(clk, data_writeReg, write[27], ctrl_reset, r27);
+	register reg28(clk, data_writeReg, write[28], ctrl_reset, r28);
+	register reg29(clk, data_writeReg, write[29], ctrl_reset, r29);
+	register reg30(clk, data_writeReg, write[30], ctrl_reset, r30);
+	register reg31(clk, data_writeReg, write[31], ctrl_reset, r31);
+
+	assign data_readRegA = A[0] ? r0 : 32'bz;
+	assign data_readRegA = A[1] ? r1 : 32'bz;
+	assign data_readRegA = A[2] ? r2 : 32'bz;
+	assign data_readRegA = A[3] ? r3 : 32'bz;
+	assign data_readRegA = A[4] ? r4 : 32'bz;
+	assign data_readRegA = A[5] ? r5 : 32'bz;
+	assign data_readRegA = A[6] ? r6 : 32'bz;
+	assign data_readRegA = A[7] ? r7 : 32'bz;
+	assign data_readRegA = A[8] ? r8 : 32'bz;
+	assign data_readRegA = A[9] ? r9 : 32'bz;
+	assign data_readRegA = A[10] ? r10 : 32'bz;
+	assign data_readRegA = A[11] ? r11 : 32'bz;
+	assign data_readRegA = A[12] ? r12 : 32'bz;
+	assign data_readRegA = A[13] ? r13 : 32'bz;
+	assign data_readRegA = A[14] ? r14 : 32'bz;
+	assign data_readRegA = A[15] ? r15 : 32'bz;
+	assign data_readRegA = A[16] ? r16 : 32'bz;
+	assign data_readRegA = A[17] ? r17 : 32'bz;
+	assign data_readRegA = A[18] ? r18 : 32'bz;
+	assign data_readRegA = A[19] ? r19 : 32'bz;
+	assign data_readRegA = A[20] ? r20 : 32'bz;
+	assign data_readRegA = A[21] ? r21 : 32'bz;
+	assign data_readRegA = A[22] ? r22 : 32'bz;
+	assign data_readRegA = A[23] ? r23 : 32'bz;
+	assign data_readRegA = A[24] ? r24 : 32'bz;
+	assign data_readRegA = A[25] ? r25 : 32'bz;
+	assign data_readRegA = A[26] ? r26 : 32'bz;
+	assign data_readRegA = A[27] ? r27 : 32'bz;
+	assign data_readRegA = A[28] ? r28 : 32'bz;
+	assign data_readRegA = A[29] ? r29 : 32'bz;
+	assign data_readRegA = A[30] ? r30 : 32'bz;
+	assign data_readRegA = A[31] ? r31 : 32'bz;
+
+	assign data_readRegB = B[0] ? r0 : 32'bz;
+	assign data_readRegB = B[1] ? r1 : 32'bz;
+	assign data_readRegB = B[2] ? r2 : 32'bz;
+	assign data_readRegB = B[3] ? r3 : 32'bz;
+	assign data_readRegB = B[4] ? r4 : 32'bz;
+	assign data_readRegB = B[5] ? r5 : 32'bz;
+	assign data_readRegB = B[6] ? r6 : 32'bz;
+	assign data_readRegB = B[7] ? r7 : 32'bz;
+	assign data_readRegB = B[8] ? r8 : 32'bz;
+	assign data_readRegB = B[9] ? r9 : 32'bz;
+	assign data_readRegB = B[10] ? r10 : 32'bz;
+	assign data_readRegB = B[11] ? r11 : 32'bz;
+	assign data_readRegB = B[12] ? r12 : 32'bz;
+	assign data_readRegB = B[13] ? r13 : 32'bz;
+	assign data_readRegB = B[14] ? r14 : 32'bz;
+	assign data_readRegB = B[15] ? r15 : 32'bz;
+	assign data_readRegB = B[16] ? r16 : 32'bz;
+	assign data_readRegB = B[17] ? r17 : 32'bz;
+	assign data_readRegB = B[18] ? r18 : 32'bz;
+	assign data_readRegB = B[19] ? r19 : 32'bz;
+	assign data_readRegB = B[20] ? r20 : 32'bz;
+	assign data_readRegB = B[21] ? r21 : 32'bz;
+	assign data_readRegB = B[22] ? r22 : 32'bz;
+	assign data_readRegB = B[23] ? r23 : 32'bz;
+	assign data_readRegB = B[24] ? r24 : 32'bz;
+	assign data_readRegB = B[25] ? r25 : 32'bz;
+	assign data_readRegB = B[26] ? r26 : 32'bz;
+	assign data_readRegB = B[27] ? r27 : 32'bz;
+	assign data_readRegB = B[28] ? r28 : 32'bz;
+	assign data_readRegB = B[29] ? r29 : 32'bz;
+	assign data_readRegB = B[30] ? r30 : 32'bz;
+	assign data_readRegB = B[31] ? r31 : 32'bz;
+
+endmodule
