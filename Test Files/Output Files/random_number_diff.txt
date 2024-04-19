@@ -1,0 +1,11 @@
+Reg:  8 Expected:           0 Actual:   247875255
+Reg:  9 Expected:           0 Actual:       20077
+Reg: 10 Expected:           0 Actual:       12345
+Reg: 11 Expected:           0 Actual:          38
+Reg: 12 Expected:           0 Actual:   247875255
+Reg: 13 Expected:           0 Actual:      -55575
+Reg: 14 Expected:           0 Actual:       -4459
+Reg: 16 Expected:          17 Actual:           0
+Reg: 17 Expected:           0 Actual:       -4459
+Reg: 18 Expected:           0 Actual:   247875255
+Reg: 30 Expected:           0 Actual:           4

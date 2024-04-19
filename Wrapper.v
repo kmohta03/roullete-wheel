@@ -59,11 +59,15 @@ module Wrapper (clock, reset);
 		.dataOut(instData));
 	
 	// Register File
+	wire [5:0] led_number;
 	regfile RegisterFile(.clock(clock), 
 		.ctrl_writeEnable(rwe), .ctrl_reset(reset), 
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
-		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB));
+		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number));
+	
+	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
+	led_decoder RoulletteLEDs(led_number, mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5);
 						
 	// Processor Memory (RAM)
 	RAM ProcMem(.clk(clock), 

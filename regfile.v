@@ -2,16 +2,17 @@ module regfile (
 	clock,
 	ctrl_writeEnable, ctrl_reset, ctrl_writeReg,
 	ctrl_readRegA, ctrl_readRegB, data_writeReg,
-	data_readRegA, data_readRegB
+	data_readRegA, data_readRegB, led_number
 );
 
 	input clock, ctrl_writeEnable, ctrl_reset;
 	input [4:0] ctrl_writeReg, ctrl_readRegA, ctrl_readRegB;
 	input [31:0] data_writeReg;
-
+	output [5:0] led_number; 
 	output [31:0] data_readRegA, data_readRegB;
 
 	// add your code here
+	assign led_number = r16[5:0];
 
 	wire [31:0] A, B, write;
 
