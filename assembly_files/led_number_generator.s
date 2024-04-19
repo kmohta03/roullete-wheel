@@ -26,7 +26,7 @@ noOp_done:
 
     # Increment LED counter
     addi $t0, $t0, 1
-    add $s0, $zero, $t0
+    addi $s0, $t0, 0
     bne $t0, $t1, spin_loop
 
     # Increment spin counter
