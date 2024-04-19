@@ -14,7 +14,7 @@ spin_loop:
     addi $t5, $t3, 1
     addi $t6, $zero, 10
     mul $t6, $t5, $t6 #MULT result is wrong need to FIX  - FOR SLOWING DOWN LOGIC!!
-    addi $t2, $zero, 1000000       # Store the calculated noOp number in $t2
+    addi $t2, $zero, 100000       # Store the calculated noOp number in $t2
 
     # Insert noOps for delay
     addi $t5, $zero, 0         # noOp counter
@@ -26,6 +26,7 @@ noOp_done:
 
     # Increment LED counter
     addi $t0, $t0, 1
+    add $s0, $zero, $t0
     bne $t0, $t1, spin_loop
 
     # Increment spin counter
