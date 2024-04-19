@@ -24,8 +24,12 @@
  *
  **/
 
-module Wrapper (clock, reset);
+module Wrapper (clock, reset, JA, JB, JC, LED);
 	input clock, reset;
+    output [7:0] JA;
+    output [6:0] JB; 
+    output [2:0] JC; 
+    output [15:0] LED;
 
 	wire rwe, mwe;
 	wire[4:0] rd, rs1, rs2;
@@ -35,7 +39,7 @@ module Wrapper (clock, reset);
 
 
 	// ADD YOUR MEMORY FILE HERE
-	localparam INSTR_FILE = "";
+	localparam INSTR_FILE = "led_number_generator";
 	
 	// Main Processing Unit
 	processor CPU(.clock(clock), .reset(reset), 
@@ -67,6 +71,23 @@ module Wrapper (clock, reset);
 		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number));
 	
 	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
+	assign JA = {mux_select_0, mux_select_1, mux_select_2[2:1]};
+	assign JB = {mux_select_2[0], mux_select_3, mux_select_4};
+	assign JC = mux_select_5;  
+	assign LED[3] = led_number[0];
+	assign LED[4] = led_number[1];
+	assign LED[5] = led_number[2];
+	assign LED[6] = led_number[3];
+	assign LED[7] = led_number[4];
+	assign LED[8] = led_number[5];
+	
+	
+	
+	
+	assign LED[0] = JA ? 1'b1 : 1'b0;
+	assign LED[1] = JB ? 1'b1 : 1'b0;
+	assign LED[2] = (JA ||JB || JC) ? 1'b1 : 1'b0;
+	
 	led_decoder RoulletteLEDs(led_number, mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5);
 						
 	// Processor Memory (RAM)
