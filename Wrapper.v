@@ -87,7 +87,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	
 	led_decoder RoulletteLEDs(led_number, mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5);
 
-	reg [7:0] keyboardValue; 
+	wire [7:0] keyboardValue; 
 	assign LED[15:9] = keyboardValue;
 	Ps2Controller keyboardComs(.clk(clock), .reset(reset), .ps2_clk(ps2_clk), .ps2_data(ps2_data), .latchedRX(keyboardValue));
 
