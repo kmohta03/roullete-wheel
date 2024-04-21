@@ -13,8 +13,8 @@ spin_loop:
     # Generate a random number of noOps (0-100)
     addi $t5, $t3, 1
     addi $t6, $zero, 10
-    mul $t6, $t5, $t6 #MULT result is wrong need to FIX  - FOR SLOWING DOWN LOGIC!!
-    addi $t2, $zero, 70000      # Store the calculated noOp number in $t2
+    # mul $t6, $t5, $t6 MULT result is wrong need to FIX  - FOR SLOWING DOWN LOGIC!!
+    addi $t2, $zero, 60000      # Store the calculated noOp number in $t2
 
     # Insert noOps for delay
     addi $t5, $zero, 0         # noOp counter
@@ -48,5 +48,12 @@ final_loop:
 
 noOp_insert: 
     nop                         # Insert noOp
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
     addi $t5, $t5, 1           # Increment noOp counter
     j noOp_loop
