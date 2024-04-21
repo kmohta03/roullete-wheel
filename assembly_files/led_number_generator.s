@@ -47,7 +47,7 @@ final_loop:
 
 
 noOp_insert: 
-    nop                         # Insert noOp
+    nop                         
     nop
     nop
     nop
@@ -55,5 +55,21 @@ noOp_insert:
     nop
     nop
     nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop  
     addi $t5, $t5, 1           # Increment noOp counter
     j noOp_loop
