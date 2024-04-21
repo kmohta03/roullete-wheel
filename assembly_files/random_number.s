@@ -1,16 +1,31 @@
+.text
+.globl main
+
 main:
     # Initialize registers
-    addi $t7, $zero, 1    # $t7 = 1 (multiplier)
-    addi $t8, $zero, 12345    # $t8 = 12345 (increment)
-    addi $t9, $zero, 38    # $t9 = 38 (modulus)
-    addi $s1, $zero, 1    # $s1 = 1 (to add to the result)
+    addi $t7, $zero, 1     # $t7 = 1 (to add to the result)
+    addi $t8, $zero, 38    # $t8 = 38 (modulus)
+    addi $t9, $zero, 12345 # $t9 = 12345 (initial seed value)
 
-    # Generate random number using LCG algorithm
-    # Formula: X_{n+1} = (a * X_n + c) mod m
-    # Here, we use a = 1, c = 12345, m = 38
-    mul $s2, $t7, $s0    # $s2 = $t7 * $s0 (multiply previous random number by multiplier)
-    add $s2, $s2, $t8    # $s2 = $s2 + $t8 (add increment to the result)
-    div $zero, $s2, $t9    # Perform modulo operation ($s2 / $t9)
-    mul $s0, $s2, $t9    # $s0 = remainder * $t9
-    sub $s0, $s2, $s0    # $s0 = $s2 - $s0 (modulo result)
-    add $s0, $s0, $s1    # $s0 = $s0 + $s1 (add 1 to the result to get a number between 1 and 38)
+    # Generate pseudo-random number using arithmetic operations
+    sll $s1, $t9, 7        # $s1 = $t9 << 7
+    add $s1, $s1, $t9      # $s1 = $s1 + $t9
+    sra $s2, $t9, 13       # $s2 = $t9 >> 13
+    sub $s1, $s1, $s2      # $s1 = $s1 - $s2
+    sll $s2, $t9, 17       # $s2 = $t9 << 17
+    add $t9, $s1, $s2      # $t9 = $s1 + $s2
+
+    # Perform modulo operation to get a number between 0 and 37
+    div $s0, $t9, $t8
+
+    # Add 1 to the result to get a number between 1 and 38
+    add $s0, $s0, $t7
+
+    # You can perform further operations with the pseudo-random number in $s0 as needed
+
+    # End of the program
+    j end
+
+end:
+    # Infinite loop to keep the program running
+    j end
