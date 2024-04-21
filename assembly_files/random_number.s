@@ -1,24 +1,16 @@
-# Initialize seed value
-add $t0, $zero, $s2
+main:
+    # Initialize registers
+    addi $t7, $zero, 1    # $t7 = 1 (multiplier)
+    addi $t8, $zero, 12345    # $t8 = 12345 (increment)
+    addi $t9, $zero, 38    # $t9 = 38 (modulus)
+    addi $s1, $zero, 1    # $s1 = 1 (to add to the result)
 
-# LCG constants
-addi $t1, $zero, 1103515245 # multiplier (a)
-addi $t2, $zero, 12345       # increment (c)
-addi $t3, $zero, 38          # range (1 to 38)
-
-# LCG algorithm
-mul $t4, $t0, $t1            # a * X(n)
-add $t4, $t4, $t2            # a * X(n) + c
-addi $t5, $zero, 2147483647
-and $t0, $t4, $t5     # (a * X(n) + c) mod m, m = 2^31
-
-# Scale to the desired range
-addi $t5, $zero, 137438953   # m / 38
-div $t6, $t0, $t5            # random number / (m / 38)
-addi $t6, $t6, 1             # add 1 to get a number between 1 and 38
-
-# Store the random number in a register (e.g., $s0)
-add $s1, $zero, $t6
-
-# Update $rstatus with the new seed value for the next run
-add $s2, $zero, $t0
+    # Generate random number using LCG algorithm
+    # Formula: X_{n+1} = (a * X_n + c) mod m
+    # Here, we use a = 1, c = 12345, m = 38
+    mul $s2, $t7, $s0    # $s2 = $t7 * $s0 (multiply previous random number by multiplier)
+    add $s2, $s2, $t8    # $s2 = $s2 + $t8 (add increment to the result)
+    div $zero, $s2, $t9    # Perform modulo operation ($s2 / $t9)
+    mul $s0, $s2, $t9    # $s0 = remainder * $t9
+    sub $s0, $s2, $s0    # $s0 = $s2 - $s0 (modulo result)
+    add $s0, $s0, $s1    # $s0 = $s0 + $s1 (add 1 to the result to get a number between 1 and 38)
