@@ -11,10 +11,11 @@ main:
 
 spin_loop:
     # Generate a random number of noOps (0-100)
+    
     addi $t5, $t3, 1
     addi $t6, $zero, 20000
     mul $t6, $t5, $t6 
-    addi $t2, $t6, 0     # Store the calculated noOp number in $t2
+    addi $t2, $t6, 40000     # Store the calculated noOp number in $t2
 
     # Insert noOps for delay
     addi $t5, $zero, 0         # noOp counter
