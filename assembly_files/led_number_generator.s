@@ -12,7 +12,7 @@ main:
 spin_loop:
     # Generate a random number of noOps (0-100)
     addi $t5, $t3, 1
-    addi $t6, $zero, 10000
+    addi $t6, $zero, 20000
     mul $t6, $t5, $t6 
     addi $t2, $t6, 0     # Store the calculated noOp number in $t2
 
