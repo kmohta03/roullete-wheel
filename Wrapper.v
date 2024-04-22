@@ -69,7 +69,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		.ctrl_writeEnable(rwe), .ctrl_reset(reset), 
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
-		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12), spin(spin));
+		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12), .spin(spin));
 		
 		
 	
@@ -83,7 +83,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	assign LED[6] = led_number[3];
 	assign LED[7] = led_number[4];
 	//assign LED[8] = led_number[5];
-	assign LED[0] = JA ? 1'b1 : 1'b0;
+	assign LED[0] = spin;
 	assign LED[1] = JB ? 1'b1 : 1'b0;
 	assign LED[2] = (JA ||JB || JC) ? 1'b1 : 1'b0;
 	
@@ -105,6 +105,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 
 	wire spin; 
 	assign spin = (betOpcode == 6'b111110);
+
 	// reg ongoingSpin = 0;
 
 	// always @(posedge clock or posedge reset) begin

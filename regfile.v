@@ -37,7 +37,7 @@ module regfile (
 
 	register reg0(clk, data_writeReg, write[0], 1'b1, r0);
 	register reg1(clk, data_writeReg, write[1], ctrl_reset, r1);
-	register reg2(clk, data_writeReg, write[2], ctrl_reset, r2);
+	register reg2(clk, reg2, 1'b1, ctrl_reset, r2);
 	register reg3(clk, data_writeReg, write[3], ctrl_reset, r3);
 	register reg4(clk, data_writeReg, write[4], ctrl_reset, r4);
 	register reg5(clk, data_writeReg, write[5], ctrl_reset, r5);
@@ -60,9 +60,9 @@ module regfile (
 	register reg22(clk, data_writeReg, write[22], ctrl_reset, r22);
 	register reg23(clk, data_writeReg, write[23], ctrl_reset, r23);
 	register reg24(clk, data_writeReg, write[24], ctrl_reset, r24);
-	register reg25(clk, reg25, write[25], ctrl_reset, r25);
-	register reg26(clk, reg26, write[26], ctrl_reset, r26);
-	register reg27(clk, reg27, write[27], ctrl_reset, r27);
+	register reg25(clk, reg25, 1'b1, ctrl_reset, r25);
+	register reg26(clk, reg26, 1'b1, ctrl_reset, r26);
+	register reg27(clk, reg27, 1'b1, ctrl_reset, r27);
 	register reg28(clk, data_writeReg, write[28], ctrl_reset, r28);
 	register reg29(clk, data_writeReg, write[29], ctrl_reset, r29);
 	register reg30(clk, data_writeReg, write[30], ctrl_reset, r30);

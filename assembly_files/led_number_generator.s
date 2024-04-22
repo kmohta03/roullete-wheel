@@ -11,6 +11,7 @@ spin_initialise:
     addi $t1, $zero, 38   # Number of LEDs
     addi $t3, $zero, 0    # Spin counter
     addi $t4, $zero, 5    # Number of spins
+    j spin_loop    
 
 spin_loop:
     # Set the number of noOps based on the spin number
