@@ -88,8 +88,12 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	led_decoder RoulletteLEDs(led_number, mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5);
 
 	wire [7:0] keyboardValue; 
-	assign LED[15:9] = keyboardValue;
+	assign LED[15:10] = betOpcode;
 	Ps2Controller keyboardComs(.clk(clock), .reset(reset), .ps2_clk(ps2_clk), .ps2_data(ps2_data), .latchedRX(keyboardValue));
+
+	wire [5:0] betOpcode; 
+	keyboardToBet betOp(.keyboardValue(keyboardValue), .betOpcode(betOpcode));
+
 
 	// Processor Memory (RAM)
 	RAM ProcMem(.clk(clock), 
