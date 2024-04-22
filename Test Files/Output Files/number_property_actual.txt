@@ -27,10 +27,10 @@ Reg 20:           0
 Reg 21:           0
 Reg 22:           0
 Reg 23:           0
-Reg 24:           0
-Reg 25:           0
-Reg 26:           0
-Reg 27:           0
+Reg 24:           1
+Reg 25:           x
+Reg 26:           x
+Reg 27:           x
 Reg 28:           0
 Reg 29:           0
 Reg 30:           0

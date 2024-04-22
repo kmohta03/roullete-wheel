@@ -101,11 +101,20 @@ module Wrapper_tb #(parameter FILE = "nop");
 		.dataOut(instData));
 	
 	// Register File
+	wire spin_check; 
+	//assign spin_check = (betOpcode == 6'b111110);
+	assign spin_check = 1'b1;
+
+	// Register File
+	wire [5:0] led_number;
+	reg [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12;
+
 	regfile RegisterFile(.clock(clock), 
 		.ctrl_writeEnable(rwe), .ctrl_reset(reset), 
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1_in), .ctrl_readRegB(rs2), 
-		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB));
+		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), 
+		.led_number(led_number), .spin_check(spin_check), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12));
 						
 	// Processor Memory (RAM)
 	RAM ProcMem(.clk(clock), 

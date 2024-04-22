@@ -2,7 +2,7 @@
 .globl main
 
 main:
-    bne $spin, $zero, spin_initialise
+    bne $t8, $zero, spin_initialise
     j main
 
 # Simulate the wheel spin
