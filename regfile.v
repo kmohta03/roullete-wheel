@@ -2,7 +2,8 @@ module regfile (
 	clock,
 	ctrl_writeEnable, ctrl_reset, ctrl_writeReg,
 	ctrl_readRegA, ctrl_readRegB, data_writeReg,
-	data_readRegA, data_readRegB, led_number
+	data_readRegA, data_readRegB, led_number, 
+	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12;
 );
 
 	input clock, ctrl_writeEnable, ctrl_reset;
@@ -10,6 +11,7 @@ module regfile (
 	input [31:0] data_writeReg;
 	output [5:0] led_number; 
 	output [31:0] data_readRegA, data_readRegB;
+	output reg [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12; 
 
 	// add your code here
 	assign led_number = r16[5:0];
@@ -25,6 +27,11 @@ module regfile (
 	assign clk = clock;
 
 	wire [31:0] r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31;
+
+	wire [31:0] reg25, reg26, reg27;
+	assign reg25 = {bet4, bet3, bet2, bet1}; 
+	assign reg26 = {bet8, bet7, bet6, bet5}; 
+	assign reg27 = {bet12, bet11, bet10, bet9};
 
 	register reg0(clk, data_writeReg, write[0], 1'b1, r0);
 	register reg1(clk, data_writeReg, write[1], ctrl_reset, r1);
@@ -51,9 +58,9 @@ module regfile (
 	register reg22(clk, data_writeReg, write[22], ctrl_reset, r22);
 	register reg23(clk, data_writeReg, write[23], ctrl_reset, r23);
 	register reg24(clk, data_writeReg, write[24], ctrl_reset, r24);
-	register reg25(clk, data_writeReg, write[25], ctrl_reset, r25);
-	register reg26(clk, data_writeReg, write[26], ctrl_reset, r26);
-	register reg27(clk, data_writeReg, write[27], ctrl_reset, r27);
+	register reg25(clk, reg25, write[25], ctrl_reset, r25);
+	register reg26(clk, reg26, write[26], ctrl_reset, r26);
+	register reg27(clk, reg27, write[27], ctrl_reset, r27);
 	register reg28(clk, data_writeReg, write[28], ctrl_reset, r28);
 	register reg29(clk, data_writeReg, write[29], ctrl_reset, r29);
 	register reg30(clk, data_writeReg, write[30], ctrl_reset, r30);

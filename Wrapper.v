@@ -69,7 +69,9 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		.ctrl_writeEnable(rwe), .ctrl_reset(reset), 
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
-		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number));
+		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12),
+		
+		
 	
 	//wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
 	assign JA = {2'b0, led_number};
@@ -89,10 +91,85 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 
 	wire [7:0] keyboardValue; 
 	assign LED[15:10] = betOpcode;
-	Ps2Controller keyboardComs(.clk(clock), .reset(reset), .ps2_clk(ps2_clk), .ps2_data(ps2_data), .latchedRX(keyboardValue));
+	wire read_data;
+	Ps2Controller keyboardComs(.clk(clock), .reset(reset), .ps2_clk(ps2_clk), .ps2_data(ps2_data), .latchedRX(keyboardValue), read_data(read_data));
 
+
+	// BETTING LOGIC
 	wire [5:0] betOpcode; 
 	keyboardToBet betOp(.keyboardValue(keyboardValue), .betOpcode(betOpcode));
+
+	wire[2:0] arduinoColor;
+
+	wire betReady; 
+
+	wire spin; 
+	assign spin = (betOpcode == 6'b111110);
+	// reg ongoingSpin = 0;
+
+	// always @(posedge clock or posedge reset) begin
+	// 	if (reset)
+	// 		ongoingSpin <= 0;
+	// 	else if (spin)
+	// 		ongoingSpin <= 1;
+	// 	else
+	// 		ongoingSpin <= 0;
+	// end
+
+	assign betReady = (read_data & betOpcode != 6'b111111 & arduinoColor != 3'b000 & ~spin); 
+
+	reg [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12;
+
+	wire [5:0] betCount;
+	wire count_enable = betReady; 
+	wire count_clear = reset; 
+	counter_6bit betCounter(
+		.clk(clock),
+		.en(count_enable),
+		.clr(count_clear),
+		.count(betCount)
+	);
+
+	// Combine Arduino color and betOpcode for latching
+	wire [7:0] combinedBet; // 2 bits for Arduino color + 6 bits for betOpcode
+	assign combinedBet = {arduinoColor [1:0], betOpcode};
+
+	// Latch logic based on the number of bets done
+	always @(posedge clock) begin
+		if (reset) begin
+			// Reset all bet registers
+			bet1 <= 0;
+			bet2 <= 0;
+			bet3 <= 0;
+			bet4 <= 0;
+			bet5 <= 0;
+			bet6 <= 0;
+			bet7 <= 0;
+			bet8 <= 0;
+			bet9 <= 0;
+			bet10 <= 0;
+			bet11 <= 0;
+			bet12 <= 0;
+		end
+		else if (betReady) begin
+			case (betCount)
+				6'd0: bet1 <= combinedBet;
+				6'd1: bet2 <= combinedBet;
+				6'd2: bet3 <= combinedBet;
+				6'd3: bet4 <= combinedBet;
+				6'd4: bet5 <= combinedBet;
+				6'd5: bet6 <= combinedBet;
+				6'd6: bet7 <= combinedBet;
+				6'd7: bet8 <= combinedBet;
+				6'd8: bet9 <= combinedBet;
+				6'd9: bet10 <= combinedBet;
+				6'd10: bet11 <= combinedBet;
+				6'd11: bet12 <= combinedBet;
+				default: ; // Do nothing for counts beyond 12
+			endcase
+		end
+	end
+
 
 
 	// Processor Memory (RAM)
