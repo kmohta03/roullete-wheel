@@ -31,7 +31,7 @@ set_noOps_0:
     j set_noOps_done
 
 set_noOps_1:
-    addi $t2, $zero, 20000
+    addi $t2, $zero, 25000
     j set_noOps_done
 
 set_noOps_2:
@@ -201,7 +201,47 @@ noOp_insert:
     nop
     nop
     nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
     nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop  
     addi $t5, $t5, 1      # Increment noOp counter
     j noOp_loop
 
@@ -217,6 +257,7 @@ noOp_done:
     # Increment spin counter
     addi $t3, $t3, 1
     addi $t0, $zero, 0
+    addi $s0, $t0, 0
     bne $t3, $t4, spin_loop
 
 # Generate a random number (0-37) for the final LED
