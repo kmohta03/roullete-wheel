@@ -73,7 +73,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		
 		
 	
-	//wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
+	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
 	assign JA = {2'b0, led_number};
 	assign JB = {mux_select_2[0], mux_select_3, mux_select_4};
 	assign JC = mux_select_5;  
