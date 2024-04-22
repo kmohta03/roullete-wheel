@@ -14,7 +14,8 @@ module regfile (
 	// add your code here
 	assign led_number = r16[5:0];
 
-	wire [31:0] A, B, write;
+	wire [31:0] A, B; 
+	write;
 
 	decoder32 regA(A, ctrl_readRegA, 1'b1);
 	decoder32 regB(B, ctrl_readRegB, 1'b1); 
@@ -25,6 +26,7 @@ module regfile (
 	assign clk = clock;
 
 	wire [31:0] r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31;
+	wire [31:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10;
 
 	register reg0(clk, data_writeReg, write[0], 1'b1, r0);
 	register reg1(clk, data_writeReg, write[1], ctrl_reset, r1);
@@ -58,6 +60,17 @@ module regfile (
 	register reg29(clk, data_writeReg, write[29], ctrl_reset, r29);
 	register reg30(clk, data_writeReg, write[30], ctrl_reset, r30);
 	register reg31(clk, data_writeReg, write[31], ctrl_reset, r31);
+	
+	register bet1(clk, data_writeReg, write[32], ctrl_reset, bet1);
+	register bet2(clk, data_writeReg, write[33], ctrl_reset, bet2);
+	register bet3(clk, data_writeReg, write[34], ctrl_reset, bet3);
+	register bet4(clk, data_writeReg, write[35], ctrl_reset, bet4);
+	register bet5(clk, data_writeReg, write[36], ctrl_reset, bet5);
+	register bet6(clk, data_writeReg, write[37], ctrl_reset, bet6);
+	register bet7(clk, data_writeReg, write[38], ctrl_reset, bet7);
+	register bet8(clk, data_writeReg, write[39], ctrl_reset, bet8);
+	register bet9(clk, data_writeReg, write[40], ctrl_reset, bet9);
+	register bet10(clk, data_writeReg, write[41], ctrl_reset, bet10);
 
 	assign data_readRegA = A[0] ? r0 : 32'bz;
 	assign data_readRegA = A[1] ? r1 : 32'bz;

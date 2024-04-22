@@ -14,7 +14,7 @@ module keyboardToBet(input [7:0] keyboardValue, output reg [7:0] betOpcode);
         8'h45: betOpcode = 6'd30; // 30
         8'h4E: betOpcode = 6'd33; // 33
         8'h55: betOpcode = 6'd36; // 36
-        8'h66: betOpcode = 6'b1011111; // 2:1 top row
+        8'h66: betOpcode = 6'b101111; // 2:1 top row
 
         8'h0D: betOpcode = 6'd37; //00
         8'h15: betOpcode = 6'd2; // 2
@@ -43,7 +43,7 @@ module keyboardToBet(input [7:0] keyboardValue, output reg [7:0] betOpcode);
         8'h4B: betOpcode = 6'd28; // 28
         8'h4C: betOpcode = 6'd31; // 31
         8'h52: betOpcode = 6'd34; // 34 
-        8'h5A: betOpcode = 6'b6'b110001; //2:1 bottom
+        8'h5A: betOpcode = 6'b110001; //2:1 bottom
 
         8'h12: betOpcode = 6'b101010; // 1-18
         8'h22: betOpcode = 6'b101100; // 1-12

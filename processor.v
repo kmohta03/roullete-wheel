@@ -361,6 +361,10 @@ module processor(
 
     assign bltbneTaken = ((dx_opcode == 5'b00010) & isNotEqual) | ((dx_opcode == 5'b00110) & isLessThan);
     assign borjFlushCheck = (bltbneTaken | (dx_opcode == 5'b00001)| (dx_opcode == 5'b00011)| (dx_opcode == 5'b00100) | (dx_opcode == 5'b10110));
+    //custom instruction
+    wire [31:0] properties;
+    number_properties getProperties(aluA, properties);
+    
     //exception handling 
     wire overflowAdd, overflowAddi, overflowSub, overflowMult, overflowDiv; 
     assign overflowMult = (dx_opcode == 5'b00000) & (dx_alu_op == 5'b00110) & multdivException;
@@ -377,7 +381,7 @@ module processor(
     wire [31:0] updated_instruction; 
     assign updated_instruction = (exceptionFlag) ? {15'b001011111000000, immediateFlagValue} : DX_IR;
 
-    assign final_result = (exceptionFlag) ? {{15{immediateFlagValue[16]}}, immediateFlagValue} : (dx_opcode == 5'b00011) ? DX_pc_next_instruction : (multOp | divOp) ? multdivResult : alu_result;              
+    assign final_result = (exceptionFlag) ? {{15{immediateFlagValue[16]}}, immediateFlagValue} : (dx_opcode == 5'b00011) ? DX_pc_next_instruction : (multOp | divOp) ? multdivResult : (dx_opcode == 5'b01110) ? properties : alu_result;              
 
     // --------- STAGE 4 -----------//
     wire [31:0] XM_O, XM_B, XM_IR;
@@ -416,7 +420,7 @@ module processor(
     assign ctrl_writeReg = (mw_opcode == 5'b00011) ? 5'b11111 : mw_rd;
     
     assign data_writeReg = (mw_opcode == 5'b01000) ? MW_D : MW_O;
-    assign ctrl_writeEnable = ((mw_opcode == 5'b00011) || (mw_opcode == 5'b01000) || (mw_opcode == 5'b00000) || (mw_opcode == 5'b00101)) ? 1'b1 : 1'b0;
+    assign ctrl_writeEnable = ((mw_opcode == 5'b00011) || (mw_opcode == 5'b01000) || (mw_opcode == 5'b00000) || (mw_opcode == 5'b00101) || (mw_opcode == 5'b01110)) ? 1'b1 : 1'b0;
 	
 	/* END CODE */
 
