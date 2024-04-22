@@ -27,7 +27,7 @@ spin_loop:
     j set_noOps_5
 
 set_noOps_0:
-    addi $t2, $zero, 20000
+    addi $t2, $zero, 15000
     j set_noOps_done
 
 set_noOps_1:
@@ -35,7 +35,7 @@ set_noOps_1:
     j set_noOps_done
 
 set_noOps_2:
-    addi $t2, $zero, 30000
+    addi $t2, $zero, 33000
     j set_noOps_done
 
 set_noOps_3:
@@ -43,7 +43,7 @@ set_noOps_3:
     j set_noOps_done
 
 set_noOps_4:
-    addi $t2, $zero, 50000
+    addi $t2, $zero, 52000
     j set_noOps_done
 
 set_noOps_5:
@@ -263,10 +263,261 @@ noOp_done:
 # Generate a random number (0-37) for the final LED
 addi $t6, $zero, 17    # Store the random number in $t6
 
-# Write the final LED value to s0
-addi $s0, $t6, 0
+addi $t7, $zero, 60000 # Initial delay value
 
-# Keep the final LED lit until another spin
+slow_down_loop:
+    # Write the current LED value to memory
+    addi $s0, $t0, 0
+
+    # Insert noOps for delay
+    addi $t5, $zero, 0    # noOp counter
+
+slow_down_noOp_loop:
+    bne $t5, $t7, slow_down_noOp_insert
+    j slow_down_noOp_done
+
+slow_down_noOp_insert:
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop  
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop  
+    addi $t5, $t5, 1      # Increment noOp counter
+    j slow_down_noOp_loop
+
+slow_down_noOp_done:
+    # Increment LED counter
+    addi $t0, $t0, 1
+    bne $t0, $t1, slow_down_loop_continue
+    addi $t0, $zero, 0    # Reset LED counter if it reaches the end
+
+slow_down_loop_continue:
+    # Check if the current LED matches the random number
+    bne $t0, $t6, slow_down_loop
+
+    # Write the final LED value to s0
+    addi $s0, $t6, 0
+
+    # Keep the final LED lit until another spin
 final_loop:
     addi $s0, $t6, 0
     j final_loop
