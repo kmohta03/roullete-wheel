@@ -63,13 +63,13 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		.addr(instAddr[11:0]), 
 		.dataOut(instData));
 	
-	// Register File
+	// Register Fi
 	wire [5:0] led_number;
 	regfile RegisterFile(.clock(clock), 
 		.ctrl_writeEnable(rwe), .ctrl_reset(reset), 
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
-		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12),
+		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12), spin(spin));
 		
 		
 	
@@ -92,7 +92,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	wire [7:0] keyboardValue; 
 	assign LED[15:10] = betOpcode;
 	wire read_data;
-	Ps2Controller keyboardComs(.clk(clock), .reset(reset), .ps2_clk(ps2_clk), .ps2_data(ps2_data), .latchedRX(keyboardValue), read_data(read_data));
+	Ps2Controller keyboardComs(.clk(clock), .reset(reset), .ps2_clk(ps2_clk), .ps2_data(ps2_data), .latchedRX(keyboardValue), .read_data(read_data));
 
 
 	// BETTING LOGIC

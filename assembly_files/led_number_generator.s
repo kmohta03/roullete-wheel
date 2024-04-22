@@ -2,7 +2,11 @@
 .globl main
 
 main:
-    # Simulate the wheel spin
+    bne $spin, $zero, spin_initialise
+    j main
+
+# Simulate the wheel spin
+spin_initialise:
     addi $t0, $zero, 0    # Initialize LED counter
     addi $t1, $zero, 38   # Number of LEDs
     addi $t3, $zero, 0    # Spin counter

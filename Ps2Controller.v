@@ -6,7 +6,6 @@ module Ps2Controller(
 	output reg [7:0] latchedRX, output read_data);
 	
     wire [7:0] tx_data, rx_data;
-    output read_data;
     wire write_data, busy, err;
     Ps2Interface keyboardInput(ps2_clk ,ps2_data, clk, reset,tx_data, write_data, rx_data, read_data, busy, err);
     
