@@ -71,8 +71,8 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
 		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number));
 	
-	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
-	assign JA = {mux_select_0, mux_select_1, mux_select_2[2:1]};
+	//wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
+	assign JA = {2'b0, led_number};
 	assign JB = {mux_select_2[0], mux_select_3, mux_select_4};
 	assign JC = mux_select_5;  
 	assign LED[3] = led_number[0];
