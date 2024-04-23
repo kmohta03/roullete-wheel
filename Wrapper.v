@@ -28,7 +28,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	input clock, reset;
     output [7:0] JA;
     input [6:0] JB; 
-    output [2:0] JC; 
+    output [4:0] JC; 
     output [15:0] LED;
 	inout ps2_clk, ps2_data;
 
@@ -75,7 +75,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		.ctrl_writeEnable(rwe), .ctrl_reset(reset), 
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
-		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .spin_check(spin_check), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12), .register25(register25));
+		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .spin_check(spin_check), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12));
 	
 	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
 	assign JA = {2'b0, led_number};
@@ -93,7 +93,8 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 
 	assign JC[0] = motor1_signal;
 	wire motor1_signal;
-	ServoController motor1(.clk(clock), .reset(reset), .position(motorposition1[7:0]), .servo_signal(motor1_signal));
+	ServoPWM motor1(.clk(clock), .reset(reset), .duty_cycle(6'd10), .servo_signal(motor1_signal))
+	//ServoController motor1(.clk(clock), .reset(reset), .position(motorposition1[7:0]), .servo_signal(motor1_signal));
 	// BETTING LOGIC
 	wire [5:0] betOpcode; 
 	keyboardToBet betOp(.keyboardValue(keyboardValue), .betOpcode(betOpcode));
