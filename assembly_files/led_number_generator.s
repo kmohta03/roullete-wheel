@@ -548,8 +548,6 @@ extract_bets:
 
 continue_extraction:
     # Extract the bet based on register counter
-    addi $29, $zero, 3
-    j continue_extraction
     bne $t1, $zero, extract_from_reg_26
     j extract_from_reg_25
 
@@ -585,6 +583,8 @@ extract_bet_reg_27:
 
 process_bet:
     # Check if extracted bet is zero (end of bets)
+    addi $29, $zero, 3
+    j process_bet
     bne $t2, $zero, calculate_payout
     j end_extraction
 
