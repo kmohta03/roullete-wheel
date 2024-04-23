@@ -71,8 +71,9 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	wire [5:0] led_number;
 	reg [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12;
     wire [31:0] register25;
-	wire [7:0] finalpayout;
-	assign LED[7:0] = register28;
+	wire [31:0] finalpayout;
+	assign LED[6:0] = register28;
+	assign LED[7] = finalpayout;
 	wire [6:0] numproperty;
 	wire[1:0] register29;
 	regfile RegisterFile( .clock(clock), 
@@ -94,7 +95,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	wire [7:0] keyboardValue; 
 
 	assign LED[13:8] = finalpayout[5:0];
-	assign LED[15:14] = register29;
+	assign LED[15:14] = finalpayout[7:6];
 	wire read_data;
 	Ps2Controller keyboardComs(.clk(clock), .reset(reset), .ps2_clk(ps2_clk), .ps2_data(ps2_data), .latchedRX(keyboardValue), .read_data(read_data));
 
