@@ -176,7 +176,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		.wEn(mwe), 
 		.addr(memAddr[11:0]), 
 		.dataIn(memDataIn), 
-		.dataOut(memDataOut)
+		.dataOut(memDataOut),
 		.motorposition1(motorposition1));
 
 endmodule
