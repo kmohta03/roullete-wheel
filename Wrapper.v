@@ -93,7 +93,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 
 	assign JC[0] = motor1_signal;
 	wire motor1_signal;
-	ServoController motor1(.clk(clock), .reset(reset), .position(motorposition1[7:0], .servo_signal(motor1_signal)));
+	ServoController motor1(.clk(clock), .reset(reset), .position(motorposition1[7:0]), .servo_signal(motor1_signal));
 	// BETTING LOGIC
 	wire [5:0] betOpcode; 
 	keyboardToBet betOp(.keyboardValue(keyboardValue), .betOpcode(betOpcode));
@@ -170,12 +170,13 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	end
 
 
-
+	wire [31:0] motorposition1;
 	// Processor Memory (RAM)
 	RAM ProcMem(.clk(clock), 
 		.wEn(mwe), 
 		.addr(memAddr[11:0]), 
 		.dataIn(memDataIn), 
-		.dataOut(memDataOut));
+		.dataOut(memDataOut)
+		.motorposition1(motorposition1));
 
 endmodule
