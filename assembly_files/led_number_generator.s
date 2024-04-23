@@ -522,6 +522,7 @@ slow_down_loop_continue:
 
     # Write the final LED value to s0
     addi $s0, $t6, 0
+    j compute_number_properties
 
 compute_number_properties: 
     nop
@@ -624,7 +625,7 @@ final_loop:
     #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
     #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
     #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    
+
     bne $t8, $zero, spin_initialise
     j final_loop
 
