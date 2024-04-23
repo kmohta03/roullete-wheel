@@ -564,18 +564,21 @@ extract_from_reg_25:
     addi $t0, $zero, 4278190080  # Load the mask value into $t0 (4278190080 is 0xFF000000 in decimal)
     and $t2, $25, $t0            # Extract first 8 bits
     addi $28, $t2, 0
+    sra $25, $25, 8
     j process_bet
 
 extract_bet_reg_26:
     # Extract bet from register 26
     addi $t0, $zero, 4278190080  # Load the mask value into $t0 (4278190080 is 0xFF000000 in decimal)
-    and $t2, $26, $t0            # Extract first 8 bits
+    and $t2, $26, $t0
+    sra $26, $26, 8            # Extract first 8 bits
     j process_bet
 
 extract_bet_reg_27:
     # Extract bet from register 27
     addi $t0, $zero, 4278190080  # Load the mask value into $t0 (4278190080 is 0xFF000000 in decimal)
-    and $t2, $27, $t0            # Extract first 8 bits
+    and $t2, $27, $t0 
+    sra $27, $27, 8           # Extract first 8 bits
     j process_bet
 
 process_bet:
@@ -591,12 +594,11 @@ calculate_payout:
 
 post_payout:
     # Shift the register to prepare for the next bet extraction
-    sra $25, $25, 8
-    sra $26, $26, 8
-    sra $27, $27, 8
+    
 
     # Increment bet counter
     addi $t0, $t0, 1
+    addi, $29, $t0, 0
 
     # Check if all bets in the current register have been processed
     addi $t3, $zero, 4
