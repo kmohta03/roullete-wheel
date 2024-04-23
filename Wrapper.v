@@ -115,7 +115,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 
 	assign betReady = (read_data & betOpcode != (6'b111111 | 6'b111110) & arduinoColor != 3'b000); 
 
-	assign LED[5:0] = betCount;
+	assign LED[7:0] = register25[15:8];
 
 	wire [5:0] betCount;
 	wire count_enable = betReady; 
@@ -151,17 +151,17 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		else if (betReady) begin
 			case (betCount)
 				6'd0: bet1 <= combinedBet;
-				6'd1: bet2 <= combinedBet;
-				6'd2: bet3 <= combinedBet;
-				6'd3: bet4 <= combinedBet;
-				6'd4: bet5 <= combinedBet;
-				6'd5: bet6 <= combinedBet;
-				6'd6: bet7 <= combinedBet;
-				6'd7: bet8 <= combinedBet;
-				6'd8: bet9 <= combinedBet;
-				6'd9: bet10 <= combinedBet;
-				6'd10: bet11 <= combinedBet;
-				6'd11: bet12 <= combinedBet;
+				6'd2: bet2 <= combinedBet;
+				6'd4: bet3 <= combinedBet;
+				6'd6: bet4 <= combinedBet;
+				6'd8: bet5 <= combinedBet;
+				6'd10: bet6 <= combinedBet;
+				6'd12: bet7 <= combinedBet;
+				6'd14: bet8 <= combinedBet;
+				6'd16: bet9 <= combinedBet;
+				6'd18: bet10 <= combinedBet;
+				6'd20: bet11 <= combinedBet;
+				6'd22: bet12 <= combinedBet;
 				default: ; // Do nothing for counts beyond 12
 			endcase
 		end
