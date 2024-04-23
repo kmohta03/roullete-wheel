@@ -71,11 +71,12 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	wire [5:0] led_number;
 	reg [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12;
     wire [31:0] register25;
+	wire [7:0] finalpayout;
 	regfile RegisterFile( .clock(clock), 
 		.ctrl_writeEnable(rwe), .ctrl_reset(reset), 
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
-		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .spin_check(spin_check), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12));
+		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .spin_check(spin_check), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12), .finalpayout(finalpayout));
 	
 	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
 	assign JA = {2'b0, led_number};
@@ -87,13 +88,13 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	//led_decoder RoulletteLEDs(led_number, mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5);
 
 	wire [7:0] keyboardValue; 
-	assign LED[15:8] = register25[7:0];
+	assign LED[15:8] = finalpayout;
 	wire read_data;
 	Ps2Controller keyboardComs(.clk(clock), .reset(reset), .ps2_clk(ps2_clk), .ps2_data(ps2_data), .latchedRX(keyboardValue), .read_data(read_data));
 
 	assign JC[0] = motor1_signal;
 	wire motor1_signal;
-	ServoPWM motor1(.clk(clock), .reset(reset), .duty_cycle(6'd10), .servo_signal(motor1_signal))
+	ServoPWM motor1(.clk(clock), .reset(reset), .duty_cycle(7'd0), .servo_signal(motor1_signal));
 	//ServoController motor1(.clk(clock), .reset(reset), .position(motorposition1[7:0]), .servo_signal(motor1_signal));
 	// BETTING LOGIC
 	wire [5:0] betOpcode; 
@@ -118,7 +119,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 
 	assign betReady = (read_data & betOpcode != (6'b111111 | 6'b111110) & arduinoColor != 3'b000); 
 
-	assign LED[7:0] = register25[15:8];
+	assign LED[7:0] = bet4;
 
 	wire [5:0] betCount;
 	wire count_enable = betReady; 
@@ -129,6 +130,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		.clr(count_clear),
 		.count(betCount)
 	);
+
 
 	// Combine Arduino color and betOpcode for latching
 	wire [7:0] combinedBet; // 2 bits for Arduino color + 6 bits for betOpcode

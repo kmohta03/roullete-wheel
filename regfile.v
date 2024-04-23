@@ -3,7 +3,7 @@ module regfile(
 	ctrl_writeEnable, ctrl_reset, ctrl_writeReg,
 	ctrl_readRegA, ctrl_readRegB, data_writeReg,
 	data_readRegA, data_readRegB, led_number, spin_check,
-	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12);
+	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12, finalpayout);
 
 	input clock, ctrl_writeEnable, ctrl_reset;
 	input spin_check;
@@ -12,8 +12,10 @@ module regfile(
 	output [5:0] led_number; 
 	output [31:0] data_readRegA, data_readRegB;
 	input [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12; 
+	output [7:0] finalpayout;
 	// add your code here
 	assign led_number = r16[5:0];
+	assign finalpayout = r18[7:0];
 	wire [31:0] A, B, write;
 
 	decoder32 regA(A, ctrl_readRegA, 1'b1);
