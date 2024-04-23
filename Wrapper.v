@@ -91,7 +91,9 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	wire read_data;
 	Ps2Controller keyboardComs(.clk(clock), .reset(reset), .ps2_clk(ps2_clk), .ps2_data(ps2_data), .latchedRX(keyboardValue), .read_data(read_data));
 
-
+	assign JC[0] = motor1_signal;
+	wire motor1_signal;
+	ServoController motor1(.clk(clock), .reset(reset), .position(motorposition1[7:0], .servo_signal(motor1_signal)));
 	// BETTING LOGIC
 	wire [5:0] betOpcode; 
 	keyboardToBet betOp(.keyboardValue(keyboardValue), .betOpcode(betOpcode));
