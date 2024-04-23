@@ -7,6 +7,7 @@ main:
 
 # Simulate the wheel spin
 spin_initialise:
+    addi $t8, $zero, 0
     addi $t0, $zero, 0    # Initialize LED counter
     addi $t1, $zero, 38   # Number of LEDs
     addi $t3, $zero, 0    # Spin counter
@@ -522,7 +523,88 @@ slow_down_loop_continue:
     # Write the final LED value to s0
     addi $s0, $t6, 0
 
+compute_number_properties: 
+    nop
+    nop
+    nop
+    numprop, $s1, $s0, 0  # s1 has the number properties
+    j bet_extraction_init
+
+bet_extraction_init:
+    # Initialize registers
+    addi $t0, $zero, 0    # Bet counter
+    addi $t1, $zero, 0    # Register counter
+    addi $t2, $zero, 0    # Extracted bet
+
+    # Start extracting bets
+extract_bets:
+    # Check if all bets have been processed
+    addi $t3, $zero, 12
+    bne $t0, $t3, continue_extraction
+    j end_extraction
+
+continue_extraction:
+    # Extract the bet based on register counter
+    bne $t1, $zero, extract_from_reg_26
+    j extract_from_reg_25
+
+extract_from_reg_26:
+    addi $t3, $zero, 1
+    bne $t1, $t3, extract_from_reg_27
+    j extract_bet_reg_26
+
+extract_from_reg_27:
+    j extract_bet_reg_27
+
+extract_from_reg_25:
+    # Extract bet from register 25
+    sra $t2, $s25, 24     # Extract first 8 bits
+    j process_bet
+
+extract_bet_reg_26:
+    # Extract bet from register 26
+    sra $t2, $s26, 24     # Extract first 8 bits
+    j process_bet
+
+extract_bet_reg_27:
+    # Extract bet from register 27
+    sra $t2, $s27, 24     # Extract first 8 bits
+
+process_bet:
+    # Check if extracted bet is zero (end of bets)
+    bne $t2, $zero, calculate_payout
+    j end_extraction
+
+calculate_payout:
+    # Call the placeholder function to calculate payout
+    # You can replace this with the actual payout calculation logic
+    # placeholder_calculate_payout($t2)
+
+    # Shift the register to prepare for the next bet extraction
+    sll $s25, $s25, 8
+    sll $s26, $s26, 8
+    sll $s27, $s27, 8
+
+    # Increment bet counter
+    addi $t0, $t0, 1
+
+    # Check if all bets in the current register have been processed
+    addi $t3, $zero, 4
+    div $t4, $t0, $t3
+    mul $t4, $t4, $t3
+    bne $t0, $t4, extract_bets
+
+    # Move to the next register
+    addi $t1, $t1, 1
+    j extract_bets
+
+end_extraction:
+    # All bets have been processed
+    # You can add any final processing or cleanup code here
+    j final_loop
+
     # Keep the final LED lit until another spin
 final_loop:
     addi $s0, $t6, 0
+    bne $t8, $zero, spin_initialise
     j final_loop

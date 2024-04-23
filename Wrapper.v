@@ -27,7 +27,7 @@
 module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	input clock, reset;
     output [7:0] JA;
-    output [6:0] JB; 
+    input [6:0] JB; 
     output [2:0] JC; 
     output [15:0] LED;
 	inout ps2_clk, ps2_data;
@@ -64,7 +64,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		.dataOut(instData));
 	
 	wire spin_check; 
-	assign spin_check = (betOpcode == 6'b111110);
+	assign spin_check = (reset) ? 1'b0 : (betOpcode == 6'b111110);
 	//assign spin_check = 1'b1;
 
 	// Register File
@@ -81,15 +81,8 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	assign JA = {2'b0, led_number};
 	assign JB = {mux_select_2[0], mux_select_3, mux_select_4};
 	assign JC = mux_select_5;  
-	assign LED[3] = led_number[0];
-	assign LED[4] = led_number[1]; 
-	assign LED[5] = led_number[2];
-	assign LED[6] = led_number[3];
-	assign LED[7] = led_number[4];
-	//assign LED[8] = led_number[5];
-	assign LED[0] = spin;
-	assign LED[1] = JB ? 1'b1 : 1'b0;
-	assign LED[2] = (JA ||JB || JC) ? 1'b1 : 1'b0;
+	
+	assign LED[7:0] = bet1;
 	
 	led_decoder RoulletteLEDs(led_number, mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5);
 
@@ -105,9 +98,9 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 
 	wire[2:0] arduinoColor;
 
+	assign arduinoColor = {JB[2], JB[1], JB[0]};
+
 	wire betReady; 
-
-
 
 	// reg ongoingSpin = 0;
 
@@ -120,7 +113,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	// 		ongoingSpin <= 0;
 	// end
 
-	assign betReady = (read_data & betOpcode != 6'b111111 & arduinoColor != 3'b000 & ~spin); 
+	assign betReady = (read_data & betOpcode != 6'b111111 & arduinoColor != 3'b000 & ~spin_check); 
 
 	
 
