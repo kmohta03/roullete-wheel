@@ -14,7 +14,7 @@ module regfile(
 	input [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12; 
 	output [7:0] finalpayout;
 	output [6:0] numproperty;
-	output [7:0] register28
+	output [7:0] register28;
 	// add your code here
 	assign led_number = r16[5:0];
 	assign finalpayout = r18[7:0];
