@@ -563,11 +563,7 @@ extract_from_reg_25:
     # Extract bet from register 25
     addi $t4, $zero, 255  # Load the mask value into $t0 (4278190080 is 0xFF000000 in decimal)
     and $t2, $25, $t4            # Extract first 8 bits
-    addi $28, $t2, 0
-    addi $t0, $t2, 1
     sra $25, $25, 8
-    addi $29, $zero, 3
-    j extract_from_reg_25
     j process_bet
 
 extract_bet_reg_26:
@@ -615,6 +611,8 @@ post_payout:
     j extract_bets
 
 end_extraction:
+    addi $29, $zero, 3
+    j end_extraction
     # All bets have been processed
     #coin distribution of payout
     j payout_distribution
