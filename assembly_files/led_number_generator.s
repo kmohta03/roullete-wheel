@@ -561,6 +561,7 @@ extract_from_reg_27:
 extract_from_reg_25:
     # Extract bet from register 25
     sra $t2, $25, 24     # Extract first 8 bits
+    addi, $28, $t2, 0
     j process_bet
 
 extract_bet_reg_26:
