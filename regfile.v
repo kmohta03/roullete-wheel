@@ -3,13 +3,13 @@ module regfile(
 	ctrl_writeEnable, ctrl_reset, ctrl_writeReg,
 	ctrl_readRegA, ctrl_readRegB, data_writeReg,
 	data_readRegA, data_readRegB, led_number, spin_check,
-	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12, finalpayout, numproperty, register28, register29, LED_mappings, betCount, chipReceived);
+	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12, finalpayout, numproperty, register28, register29, LED_mappings, betCount, betReceived);
 
 	input clock, ctrl_writeEnable, ctrl_reset;
-	input spin_check, chipReceived;
+	input spin_check, betReceived;
 	input [4:0] ctrl_writeReg, ctrl_readRegA, ctrl_readRegB;
 	input [31:0] data_writeReg;
-	output [5:0] led_number; 
+	output [5:0] led_number;
 	output [31:0] data_readRegA, data_readRegB;
 	input [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12; 
 	output [31:0] finalpayout;
@@ -17,7 +17,7 @@ module regfile(
 	output [7:0] register28;
 	output [1:0] register29;
 	output [15:0] LED_mappings;
-	input [4:0] betCount; 
+	input [4:0] betCount;
 	// add your code here
 	assign led_number = r16[5:0];
 	assign finalpayout = r18;
@@ -25,11 +25,12 @@ module regfile(
 	assign register28 = r8[7:0];
 	assign register29 = r29[1:0];
 	
-	assign LED_mappings = {r18[7:0], r8[5:0], chipReceived, spin_check};
+	//assign LED_mappings = {r18[7:0], bet1[7:2], betReceived, spin_check};
+	//assign LED_mappings[0] = r3[0];
 	wire [31:0] A, B, write;
 
 	decoder32 regA(A, ctrl_readRegA, 1'b1);
-	decoder32 regB(B, ctrl_readRegB, 1'b1); 
+	decoder32 regB(B, ctrl_readRegB, 1'b1);
 	decoder32 writeReg(write, ctrl_writeReg, ctrl_writeEnable); // instead of and gate done decode with write_enable
 
 	wire clk; 
@@ -46,7 +47,7 @@ module regfile(
 	assign rg4 = {31'b0, spin_check};
 	wire [31:0] rg2;
 	wire [31:0] rg3; 
-	assign rg3 = {31'b0, chipReceived};
+	assign rg3 = {31'b0, betReceived};
 	assign rg2 = {27'b0, betCount};
 
 	register reg0(clk, data_writeReg, write[0], 1'b1, r0);

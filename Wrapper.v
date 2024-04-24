@@ -82,7 +82,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
 		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .spin_check(spin_check), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12), .finalpayout(finalpayout), 
-		.numproperty(numproperty), .register28(register28), .register29(register29), .LED_mappings(LED), .betCount(betCount[5:1]), .chipReceived(arduinoColor[2]));
+		.numproperty(numproperty), .register28(register28), .register29(register29), .LED_mappings(LED), .betCount(betCount[5:1]), .betReceived(arduinoColor[2]));
 	wire [7:0] register28;
 	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
 	assign JA = {2'b0, led_number};
@@ -111,13 +111,19 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 	keyboardToBet betOp(.keyboardValue(keyboardValue), .betOpcode(betOpcode));
 
 	wire[2:0] arduinoColor;
+	
+	//wire betReceived = (betOpcode) & (betOpcode != 6'b111110 
 
 	assign arduinoColor = {JB[2], JB[1], JB[0]};
+	wire betAmount1, betAmount2;
+	dffe_ref amount1(betAmount1, arduinoColor[0], clock, arduinoColor[2], betReady);
+	dffe_ref amount2(betAmount2, arduinoColor[1], clock, arduinoColor[2], betReady); 
 	//CHANGE BACK CHANGE BACK CHANGE BACK CHANGE AN
 	//assign arduinoColor = 3'b101;
 
 	wire betReady; 
-
+    assign LED[7:1] = chipMotor;
+    assign LED[0] = arduinoColor[2];
 	// reg ongoingSpin = 0;
 
 	// always @(posedge clock or posedge reset) begin
@@ -144,7 +150,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 
 	// Combine Arduino color and betOpcode for latching
 	wire [7:0] combinedBet; // 2 bits for Arduino color + 6 bits for betOpcode
-	assign combinedBet = {arduinoColor [1:0], betOpcode};
+	assign combinedBet = {betAmount2, betAmount1, betOpcode};
     
 	// Latch logic based on the number of bets done
 	always @(posedge clock) begin

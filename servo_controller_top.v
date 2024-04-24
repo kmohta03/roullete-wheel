@@ -16,35 +16,35 @@ module servo_controller_top (
 // Instantiate the servo_controller modules for each motor
 servo_controller servo_ctrl_1 (
     .clk(clk),
-    .reset(~reset),
+    .reset(reset),
     .duty_cycle(duty_cycle_1),
     .servo_signal(jc_1)
 );
 
 servo_controller servo_ctrl_2 (
     .clk(clk),
-    .reset(~reset),
+    .reset(reset),
     .duty_cycle(duty_cycle_2),
     .servo_signal(jc_2)
 );
 
 servo_controller servo_ctrl_3 (
     .clk(clk),
-    .reset(~reset),
+    .reset(reset),
     .duty_cycle(duty_cycle_3),
     .servo_signal(jc_3)
 );
 
 servo_controller servo_ctrl_4 (
     .clk(clk),
-    .reset(~reset),
+    .reset(reset),
     .duty_cycle(duty_cycle_4),
     .servo_signal(jc_4)
 );
 
 servo_controller servo_ctrl_5 (
     .clk(clk),
-    .reset(~reset),
+    .reset(reset),
     .duty_cycle(duty_cycle_5),
     .servo_signal(jc_7)
 );
