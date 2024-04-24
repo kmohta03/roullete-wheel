@@ -82,7 +82,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
 		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .spin_check(spin_check), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12), .finalpayout(finalpayout), 
-		.numproperty(numproperty), .register28(register28), .register29(register29), .LED_mappings(LED), .betCount(betCount[5:1]));
+		.numproperty(numproperty), .register28(register28), .register29(register29), .LED_mappings(LED), .betCount(betCount[5:1]), .chipReceived(arduinoColor[2]));
 	wire [7:0] register28;
 	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
 	assign JA = {2'b0, led_number};
@@ -104,7 +104,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 
 	assign JC[0] = motor1_signal;
 	wire motor1_signal;
-	ServoPWM motor1(.clk(clock), .reset(reset), .duty_cycle(7'd0), .servo_signal(motor1_signal));
+	//ServoPWM motor1(.clk(clock), .reset(reset), .duty_cycle(7'd0), .servo_signal(motor1_signal));
 	//ServoController motor1(.clk(clock), .reset(reset), .position(motorposition1[7:0]), .servo_signal(motor1_signal));
 	// BETTING LOGIC
 	wire [5:0] betOpcode; 
@@ -112,9 +112,9 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 
 	wire[2:0] arduinoColor;
 
-	//assign arduinoColor = {JB[2], JB[1], JB[0]};
+	assign arduinoColor = {JB[2], JB[1], JB[0]};
 	//CHANGE BACK CHANGE BACK CHANGE BACK CHANGE AN
-	assign arduinoColor = 3'b101;
+	//assign arduinoColor = 3'b101;
 
 	wire betReady; 
 
@@ -199,14 +199,21 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 	end
 
     seven_segment_display sevenSeg(betCount[3:0], seg, AN);
-
-	wire [31:0] motorposition1;
+    
+    
+	wire [31:0] motorposition1, motorposition2, motorposition3, motorposition4, chipMotor;
+	//MOTOR CONTrOLS 
+	servo_controller_top motors(clock, reset, motorposition1[6:0], motorposition2[6:0], motorposition3[6:0], 
+	       motorposition4[6:0], chipMotor[6:0], JC[0], JC[1], JC[2], JC[3], JC[4]);
 	// Processor Memory (RAM)
 	RAM ProcMem(.clk(clock), 
 		.wEn(mwe), 
 		.addr(memAddr[11:0]), 
 		.dataIn(memDataIn), 
 		.dataOut(memDataOut),
-		.motorposition1(motorposition1));
-
+		.motorposition1(motorposition1),
+		.motorposition2(motorposition2),
+		.motorposition3(motorposition3),
+		.motorposition4(motorposition4),
+		.chipMotor(chipMotor));
 endmodule

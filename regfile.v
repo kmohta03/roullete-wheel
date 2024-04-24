@@ -3,10 +3,10 @@ module regfile(
 	ctrl_writeEnable, ctrl_reset, ctrl_writeReg,
 	ctrl_readRegA, ctrl_readRegB, data_writeReg,
 	data_readRegA, data_readRegB, led_number, spin_check,
-	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12, finalpayout, numproperty, register28, register29, LED_mappings, betCount);
+	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12, finalpayout, numproperty, register28, register29, LED_mappings, betCount, chipReceived);
 
 	input clock, ctrl_writeEnable, ctrl_reset;
-	input spin_check;
+	input spin_check, chipReceived;
 	input [4:0] ctrl_writeReg, ctrl_readRegA, ctrl_readRegB;
 	input [31:0] data_writeReg;
 	output [5:0] led_number; 
@@ -25,7 +25,7 @@ module regfile(
 	assign register28 = r8[7:0];
 	assign register29 = r29[1:0];
 	
-	assign LED_mappings = {r18[7:0], r8[4:0], r2[2:0]};
+	assign LED_mappings = {r18[7:0], r8[5:0], chipReceived, spin_check};
 	wire [31:0] A, B, write;
 
 	decoder32 regA(A, ctrl_readRegA, 1'b1);
@@ -38,20 +38,22 @@ module regfile(
 
 	wire [31:0] r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31;
 
-	wire [31:0] rg25, rg26, rg27, rg24;
+	wire [31:0] rg25, rg26, rg27, rg4;
 	assign rg25 = {bet4, bet3, bet2, bet1}; 
 	assign rg26 = {bet8, bet7, bet6, bet5}; 
 	assign rg27 = {bet12, bet11, bet10, bet9};
 
-	assign rg24 = {31'b0, spin_check};
+	assign rg4 = {31'b0, spin_check};
 	wire [31:0] rg2;
+	wire [31:0] rg3; 
+	assign rg3 = {31'b0, chipReceived};
 	assign rg2 = {27'b0, betCount};
 
 	register reg0(clk, data_writeReg, write[0], 1'b1, r0);
 	register reg1(clk, data_writeReg, write[1], ctrl_reset, r1);
 	register reg2(clk, rg2, 1'b1, ctrl_reset, r2);
-	register reg3(clk, data_writeReg, write[3], ctrl_reset, r3);
-	register reg4(clk, data_writeReg, write[4], ctrl_reset, r4);
+	register reg3(clk, rg3, 1'b1, ctrl_reset, r3);
+	register reg4(clk, rg4, 1'b1, ctrl_reset, r4);
 	register reg5(clk, data_writeReg, write[5], ctrl_reset, r5);
 	register reg6(clk, data_writeReg, write[6], ctrl_reset, r6);
 	register reg7(clk, data_writeReg, write[7], ctrl_reset, r7);
@@ -71,7 +73,7 @@ module regfile(
 	register reg21(clk, data_writeReg, write[21], ctrl_reset, r21);
 	register reg22(clk, data_writeReg, write[22], ctrl_reset, r22);
 	register reg23(clk, data_writeReg, write[23], ctrl_reset, r23);
-	register reg24(clk, rg24, 1'b1, ctrl_reset, r24);
+	register reg24(clk, data_writeReg, write[24], ctrl_reset, r24);
 	register reg25(clk, rg25, 1'b1, ctrl_reset, r25);
 	register reg26(clk, rg26, 1'b1, ctrl_reset, r26);
 	register reg27(clk, rg27, 1'b1, ctrl_reset, r27);
