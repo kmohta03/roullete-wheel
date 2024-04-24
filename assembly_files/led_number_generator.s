@@ -582,7 +582,6 @@ extract_bet_reg_27:
 
 process_bet:
     # Check if extracted bet is zero (end of bets)
-    
     bne $t2, $zero, calculate_payout
     j end_extraction
 
@@ -593,25 +592,25 @@ calculate_payout:
     j payout_calculation
 
 post_payout:
-    # Shift the register to prepare for the next bet extraction
-    
-
     # Increment bet counter
+    #j post_payout
     addi $t0, $t0, 1
-    addi, $29, $t0, 0
+    addi $29, $t0, 0
+    blt $t0, $2, update_bet_counts
+    j end_extraction
 
+update_bet_counts:
     # Check if all bets in the current register have been processed
-    addi $t3, $zero, 4
-    div $t4, $t0, $t3
-    mul $t4, $t4, $t3
-    bne $t0, $t4, extract_bets
+    addi $t4, $zero, 3
+    and $t4, $t0, $t4
+    bne $t4, $zero, extract_bets
 
     # Move to the next register
     addi $t1, $t1, 1
     j extract_bets
 
 end_extraction:
-    addi $29, $zero, 3
+    addi $t8, $zero, 3
     j end_extraction
     # All bets have been processed
     #coin distribution of payout
@@ -650,33 +649,33 @@ payout_calculation:
     # Check if the bet type is 111110 (terminate payout calculation)
     addi $t8, $zero, 62    # Value for 111110
     bne $t7, $t8, continue_payout
-    j end_payout
+    j end_extraction
 
 continue_payout:
     # Extract the bet amount (7th and 8th bits) into $t8
     sra $t8, $t6, 6
-    addi $t9, $zero, 3     # Mask for extracting 7th and 8th bits
-    and $t8, $t8, $t9
+    addi $s7, $zero, 3     # Mask for extracting 7th and 8th bits
+    and $t8, $t8, $s7
 
     # Determine the bet amount based on the extracted bits
     bne $t8, $zero, check_amount_5
-    addi $t9, $zero, 1      # Bet amount is 1
+    addi $s7, $zero, 1      # Bet amount is 1
     j calculate_bet_payout
 
 check_amount_5:
     addi $t3, $zero, 1
     bne $t8, $t3, check_amount_25
-    addi $t9, $zero, 5      # Bet amount is 5
+    addi $s7, $zero, 5      # Bet amount is 5
     j calculate_bet_payout
 
 check_amount_25:
     addi $t3, $zero, 2
     bne $t8, $t3, check_amount_100
-    addi $t9, $zero, 25     # Bet amount is 25
+    addi $s7, $zero, 25     # Bet amount is 25
     j calculate_bet_payout
 
 check_amount_100:
-    addi $t9, $zero, 100    # Bet amount is 100
+    addi $s7, $zero, 100    # Bet amount is 100
 
 calculate_bet_payout:
     # Check the bet type and calculate the payout accordingly
@@ -692,12 +691,19 @@ payout_number:
     bne $t7, $t8, end_payout
     # Payout is 36 times the bet amount (including the original bet)
     addi $t8, $zero, 36
-    mul $t8, $t8, $t9
+    mul $t8, $t8, $s7
     add $s2, $s2, $t8
     j end_payout
 
 payout_special:
     # Payout for special bets
+    sra $t8, $s1, 13    # Shift right by 13 bits to get the 14th bit
+    addi $t9, $zero, 1
+    and $t8, $t8, $t9   # Mask the 14th bit
+    bne $t8, $t9, not_zeros
+    j end_payout
+
+not_zeros:
     addi $t8, $zero, 38
     bne $t7, $t8, check_black
     # Payout for red bet
@@ -709,7 +715,7 @@ payout_special:
     j end_payout
 red_payout:
     # Payout is 2 times the bet amount (including the original bet)
-    sll $t3, $t9, 1
+    sll $t3, $s7, 1
     add $s2, $s2, $t3
     j end_payout
 
@@ -723,7 +729,7 @@ check_black:
     and $t8, $t8, $t3
     bne $t8, $zero, end_payout
     # Payout is 2 times the bet amount (including the original bet)
-    sll $t3, $t9, 1
+    sll $t3, $s7, 1
     add $s2, $s2, $t3
     j end_payout
 
@@ -739,7 +745,7 @@ check_even:
     j end_payout
 even_payout:
     # Payout is 2 times the bet amount (including the original bet)
-    sll $t3, $t9, 1
+    sll $t3, $s7, 1
     add $s2, $s2, $t3
     j end_payout
 
@@ -753,7 +759,7 @@ check_odd:
     and $t8, $t8, $t3
     bne $t8, $zero, end_payout
     # Payout is 2 times the bet amount (including the original bet)
-    sll $t3, $t9, 1
+    sll $t3, $s7, 1
     add $s2, $s2, $t3
     j end_payout
 
@@ -767,7 +773,7 @@ check_1_18:
     and $t8, $t8, $t3
     bne $t8, $zero, end_payout
     # Payout is 2 times the bet amount (including the original bet)
-    sll $t3, $t9, 1
+    sll $t3, $s7, 1
     add $s2, $s2, $t3
     j end_payout
 
@@ -783,7 +789,7 @@ check_19_36:
     j end_payout
 payout_19_36:
     # Payout is 2 times the bet amount (including the original bet)
-    sll $t3, $t9, 1
+    sll $t3, $s7, 1
     add $s2, $s2, $t3
     j end_payout
 
@@ -799,7 +805,7 @@ check_1_12:
     bne $t8, $t3, end_payout
     # Payout is 3 times the bet amount (including the original bet)
     addi $t3, $zero, 3
-    mul $t3, $t3, $t9
+    mul $t3, $t3, $s7
     add $s2, $s2, $t3
     j end_payout
 
@@ -815,7 +821,7 @@ check_13_24:
     bne $t8, $t3, end_payout
     # Payout is 3 times the bet amount (including the original bet)
     addi $t3, $zero, 3
-    mul $t3, $t3, $t9
+    mul $t3, $t3, $s7
     add $s2, $s2, $t3
     j end_payout
 
@@ -831,7 +837,7 @@ check_25_36:
     bne $t8, $t3, end_payout
     # Payout is 3 times the bet amount (including the original bet)
     addi $t3, $zero, 3
-    mul $t3, $t3, $t9
+    mul $t3, $t3, $s7
     add $s2, $s2, $t3
     j end_payout
 
@@ -839,15 +845,15 @@ check_top_column:
     addi $t8, $zero, 47
     bne $t7, $t8, check_middle_column
     # Payout for top column bet
-    # Check if the 13th and 14th bits of $s1 are 11 (top column)
-    sra $t8, $s1, 12
+    # Check if the 12th and 13th bits of $s1 are 11 (top column)
+    sra $t8, $s1, 11
     addi $t3, $zero, 3     # Mask for extracting 13th and 14th bits
     and $t8, $t8, $t3
     addi $t3, $zero, 3
     bne $t8, $t3, end_payout
     # Payout is 3 times the bet amount (including the original bet)
     addi $t3, $zero, 3
-    mul $t3, $t3, $t9
+    mul $t3, $t3, $s7
     add $s2, $s2, $t3
     j end_payout
 
@@ -855,15 +861,15 @@ check_middle_column:
     addi $t8, $zero, 48
     bne $t7, $t8, check_bottom_column
     # Payout for middle column bet
-    # Check if the 13th and 14th bits of $s1 are 10 (middle column)
-    sra $t8, $s1, 12
+    # Check if the 12th and 13th bits of $s1 are 10 (middle column)
+    sra $t8, $s1, 11
     addi $t3, $zero, 3     # Mask for extracting 13th and 14th bits
     and $t8, $t8, $t3
     addi $t3, $zero, 2
     bne $t8, $t3, end_payout
     # Payout is 3 times the bet amount (including the original bet)
     addi $t3, $zero, 3
-    mul $t3, $t3, $t9
+    mul $t3, $t3, $s7
     add $s2, $s2, $t3
     j end_payout
 
@@ -871,19 +877,19 @@ check_bottom_column:
     addi $t8, $zero, 49
     bne $t7, $t8, end_payout
     # Payout for bottom column bet
-    # Check if the 13th and 14th bits of $s1 are 01 (bottom column)
-    sra $t8, $s1, 12
+    # Check if the 12th and 13th bits of $s1 are 01 (bottom column)
+    sra $t8, $s1, 11
     addi $t3, $zero, 3     # Mask for extracting 13th and 14th bits
     and $t8, $t8, $t3
     addi $t3, $zero, 1
     bne $t8, $t3, end_payout
     # Payout is 3 times the bet amount (including the original bet)
     addi $t3, $zero, 3
-    mul $t3, $t3, $t9
+    mul $t3, $t3, $s7
     add $s2, $s2, $t3
 
 end_payout:
-    # Return to the bet extraction code
+    # Return to the bet extraction code	
     j post_payout
 
 payout_distribution:

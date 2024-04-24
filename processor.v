@@ -64,7 +64,6 @@ module processor(
 	/* YOUR CODE STARTS HERE */
     wire stall; 
     wire [31:0] noOp;
-    assign stall = 1'b0;
     assign noOp = 32'b0; 
 
     // -------- STAGE 1 ----------- //

@@ -24,12 +24,14 @@
  *
  **/
 
-module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
+module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 	input clock, reset;
     output [7:0] JA;
     input [6:0] JB; 
     output [4:0] JC; 
     output [15:0] LED;
+	output [6:0] seg; 
+	output [7:0] AN;
 	inout ps2_clk, ps2_data;
 
 	wire rwe, mwe;
@@ -72,8 +74,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	reg [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12;
     wire [31:0] register25;
 	wire [31:0] finalpayout;
-	assign LED[6:0] = register28;
-	assign LED[7] = finalpayout;
+
 	wire [6:0] numproperty;
 	wire[1:0] register29;
 	regfile RegisterFile( .clock(clock), 
@@ -81,21 +82,23 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		.ctrl_writeReg(rd),
 		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
 		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .spin_check(spin_check), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12), .finalpayout(finalpayout), 
-		.numproperty(numproperty), .register28(register28), .register29(register29));
+		.numproperty(numproperty), .register28(register28), .register29(register29), .LED_mappings(LED), .betCount(betCount[5:1]));
 	wire [7:0] register28;
 	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
 	assign JA = {2'b0, led_number};
 	
 	//assign LED[7:0] = bet1;
-	
+//	assign LED[6:0] = register28;
+//	assign LED[7] = finalpayout;
+//	assign LED[13:8] = finalpayout[5:0];
+//	assign LED[15:14] = finalpayout[7:6];
     
 	
 	//led_decoder RoulletteLEDs(led_number, mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5);
 
 	wire [7:0] keyboardValue; 
 
-	assign LED[13:8] = finalpayout[5:0];
-	assign LED[15:14] = finalpayout[7:6];
+
 	wire read_data;
 	Ps2Controller keyboardComs(.clk(clock), .reset(reset), .ps2_clk(ps2_clk), .ps2_data(ps2_data), .latchedRX(keyboardValue), .read_data(read_data));
 
@@ -109,7 +112,9 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 
 	wire[2:0] arduinoColor;
 
-	assign arduinoColor = {JB[2], JB[1], JB[0]};
+	//assign arduinoColor = {JB[2], JB[1], JB[0]};
+	//CHANGE BACK CHANGE BACK CHANGE BACK CHANGE AN
+	assign arduinoColor = 3'b101;
 
 	wire betReady; 
 
@@ -126,9 +131,8 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 
 	assign betReady = (read_data & betOpcode != (6'b111111 | 6'b111110) & arduinoColor != 3'b000); 
 
-
 	wire [5:0] betCount;
-	wire count_enable = betReady; 
+	wire count_enable = betReady & !spin_check; //SWITCH BACK WHEN WE DONT WANT COUNTER TO INCREMENT
 	wire count_clear = reset; 
 	counter_6bit betCounter(
 		.clk(clock),
@@ -141,7 +145,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 	// Combine Arduino color and betOpcode for latching
 	wire [7:0] combinedBet; // 2 bits for Arduino color + 6 bits for betOpcode
 	assign combinedBet = {arduinoColor [1:0], betOpcode};
-
+    
 	// Latch logic based on the number of bets done
 	always @(posedge clock) begin
 		if (reset) begin
@@ -158,6 +162,22 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 			bet10 <= 0;
 			bet11 <= 0;
 			bet12 <= 0;
+		end
+		else if (spin_check) begin
+		    case (betCount + 2)
+                6'd0: bet1 <= combinedBet;
+				6'd2: bet2 <= combinedBet;
+				6'd4: bet3 <= combinedBet;
+				6'd6: bet4 <= combinedBet;
+				6'd8: bet5 <= combinedBet;
+				6'd10: bet6 <= combinedBet;
+				6'd12: bet7 <= combinedBet;
+				6'd14: bet8 <= combinedBet;
+				6'd16: bet9 <= combinedBet;
+				6'd18: bet10 <= combinedBet;
+				6'd20: bet11 <= combinedBet;
+				6'd22: bet12 <= combinedBet;
+		    endcase
 		end
 		else if (betReady) begin
 			case (betCount)
@@ -178,6 +198,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data);
 		end
 	end
 
+    seven_segment_display sevenSeg(betCount[3:0], seg, AN);
 
 	wire [31:0] motorposition1;
 	// Processor Memory (RAM)

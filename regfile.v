@@ -3,7 +3,7 @@ module regfile(
 	ctrl_writeEnable, ctrl_reset, ctrl_writeReg,
 	ctrl_readRegA, ctrl_readRegB, data_writeReg,
 	data_readRegA, data_readRegB, led_number, spin_check,
-	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12, finalpayout, numproperty, register28, register29);
+	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12, finalpayout, numproperty, register28, register29, LED_mappings, betCount);
 
 	input clock, ctrl_writeEnable, ctrl_reset;
 	input spin_check;
@@ -16,12 +16,16 @@ module regfile(
 	output [6:0] numproperty;
 	output [7:0] register28;
 	output [1:0] register29;
+	output [15:0] LED_mappings;
+	input [4:0] betCount; 
 	// add your code here
 	assign led_number = r16[5:0];
 	assign finalpayout = r18;
 	assign numproperty = r17[6:0];
 	assign register28 = r8[7:0];
 	assign register29 = r29[1:0];
+	
+	assign LED_mappings = {r18[7:0], r8[4:0], r2[2:0]};
 	wire [31:0] A, B, write;
 
 	decoder32 regA(A, ctrl_readRegA, 1'b1);
@@ -40,10 +44,12 @@ module regfile(
 	assign rg27 = {bet12, bet11, bet10, bet9};
 
 	assign rg24 = {31'b0, spin_check};
+	wire [31:0] rg2;
+	assign rg2 = {27'b0, betCount};
 
 	register reg0(clk, data_writeReg, write[0], 1'b1, r0);
 	register reg1(clk, data_writeReg, write[1], ctrl_reset, r1);
-	register reg2(clk, data_writeReg, write[2], ctrl_reset, r2);
+	register reg2(clk, rg2, 1'b1, ctrl_reset, r2);
 	register reg3(clk, data_writeReg, write[3], ctrl_reset, r3);
 	register reg4(clk, data_writeReg, write[4], ctrl_reset, r4);
 	register reg5(clk, data_writeReg, write[5], ctrl_reset, r5);
