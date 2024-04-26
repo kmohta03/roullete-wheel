@@ -24,9 +24,10 @@
  *
  **/
 
-module Wrapper (clock, rst, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
+module Wrapper (clock, rst, JA, JA_out, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 	input clock, rst;
-    output [7:0] JA;
+    input [5:0] JA;
+    output JA_out;
     input [6:0] JB; 
     output [4:0] JC; 
     output [15:0] LED;
@@ -39,7 +40,7 @@ module Wrapper (clock, rst, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 	wire[31:0] instAddr, instData, 
 		rData, regA, regB,
 		memAddr, memDataIn, memDataOut;
-
+    
     assign reset = (register5) ? 1'b1 : rst;
 	// ADD YOUR MEMORY FILE HERE
 	localparam INSTR_FILE = "led_number_generator";
@@ -120,8 +121,9 @@ module Wrapper (clock, rst, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 	wire [31:0] register17;
 	wire [7:0] register28;
 	wire [31:0] register16;
+	assign JA_out = spin_check;
 	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
-	assign JA = {2'b0, led_number};
+	assign led_number = JA; 
 	wire [5:0] nonMapped, finalMapped;
 	wire [31:0] register6;
 	roulette_mapping mipsToArduino (nonMapped, register6[5:0]);

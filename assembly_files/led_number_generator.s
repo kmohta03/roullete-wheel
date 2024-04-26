@@ -17,13 +17,15 @@ spin_initialise:
     addi $t1, $zero, 38   # Number of LEDs
     addi $t3, $zero, 0    # Spin counter
     addi $t4, $zero, 5    # Number of spins
+    addi $6, $zero, 1
     j spin_loop    
 
 spin_loop:
+    
     # Set the number of noOps based on the spin number
     addi $t5, $t3, 0      # Get the current spin number
     addi $t2, $zero, 0    # Initialize the noOp count
-
+    j get_number
     # Set the noOp count based on the spin number
     addi $t6, $zero, 1
     blt $t5, $t6, set_noOps_0
@@ -271,10 +273,16 @@ noOp_done:
     addi $s0, $t0, 0
     bne $t3, $t4, spin_loop
 
-# Generate a random number (0-37) for the final LED
-addi $t6, $zero, 17    # Store the random number in $t6
 
-addi $t7, $zero, 60000 # Initial delay value
+get_number:
+    addi $t6, $zero, 63
+    bne $s0, $t6, compute_number_properties
+    j get_number
+
+# # Generate a random number (0-37) for the final LED
+# addi $t6, $zero, 17    # Store the random number in $t6
+
+# addi $t7, $zero, 60000 # Initial delay value
 
 slow_down_loop:
     # Write the current LED value to memory
@@ -538,17 +546,18 @@ compute_number_properties:
 
 bet_extraction_init:
     # Initialize registers
-    addi $t0, $zero, 0    # Bet counter
-    addi $t1, $zero, 0    # Register counter
-    addi $t2, $zero, 0    # Extracted bet
+    addi $t0, $zero, 0  # Bet counter
+    addi $t1, $zero, 0  # Register counter
+    addi $t2, $zero, 0  # Extracted bet
+    addi $t3, $zero, 0  # Temporary register for shifted value
     addi $s2, $zero, 0
     j extract_bets  
 
     # Start extracting bets
 extract_bets:
     # Check if all bets have been processed
-    addi $t3, $zero, 12 # WORKS UNTIL HERE
-    bne $t0, $t3, continue_extraction
+    addi $t4, $zero, 12
+    bne $t0, $t4, continue_extraction
     j end_extraction
 
 continue_extraction:
@@ -556,33 +565,89 @@ continue_extraction:
     bne $t1, $zero, extract_from_reg_26
     j extract_from_reg_25
 
+
 extract_from_reg_26:
-    addi $t3, $zero, 1
-    bne $t1, $t3, extract_from_reg_27
-    j extract_bet_reg_26
+    addi $t4, $zero, 1
+    bne $t1, $t4, extract_from_reg_27
+    j extract_bet_reg_26_bet1
 
 extract_from_reg_27:
-    j extract_bet_reg_27
+    j extract_bet_reg_27_bet1
 
 extract_from_reg_25:
-    # Extract bet from register 25
-    addi $t4, $zero, 255  # Load the mask value into $t0 (4278190080 is 0xFF000000 in decimal)
-    and $t2, $25, $t4            # Extract first 8 bits
-    sra $25, $25, 8
+    # Extract bets from register 25
+    addi $t3, $zero, 255
+    and $t2, $25, $t3      # Extract the first bet
     j process_bet
 
-extract_bet_reg_26:
-    # Extract bet from register 26
-    addi $t4, $zero, 255  # Load the mask value into $t0 (4278190080 is 0xFF000000 in decimal)
-    and $t2, $26, $t4
-    sra $26, $26, 8            # Extract first 8 bits
+extract_from_reg_25_bet2:
+    addi $t4, $zero, 65280
+    and $t3, $25, $t4      # Extract the second bet
+    sra $t2, $t3, 8
+    j extract_from_reg_25_bet2
     j process_bet
 
-extract_bet_reg_27:
-    # Extract bet from register 27
-    addi $t4, $zero, 255  # Load the mask value into $t0 (4278190080 is 0xFF000000 in decimal)
-    and $t2, $27, $t4
-    sra $27, $27, 8           # Extract first 8 bits
+extract_from_reg_25_bet3:
+    addi $t4, $zero, 16711680
+    and $t3, $25, $t4      # Extract the third bet
+    sra $t2, $t3, 16
+    j process_bet
+
+extract_from_reg_25_bet4:
+    addi $t4, $zero, 4278190080
+    and $t2, $25, $t4      # Extract the fourth bet
+    sra $t2, $t2, 24
+    j process_bet
+
+
+extract_bet_reg_26_bet1:
+    # Extract bets from register 26
+    addi $t4, $zero, 255
+    and $t2, $26, $t4      # Extract the first bet
+    j process_bet
+
+extract_bet_reg_26_bet2:
+    addi $t4, $zero, 65280
+    and $t3, $26, $t4      # Extract the second bet
+    sra $t2, $t3, 8
+    j process_bet
+
+extract_bet_reg_26_bet3:
+    addi $t4, $zero, 16711680
+    and $t3, $26, $t4      # Extract the third bet
+    sra $t2, $t3, 16
+    j process_bet
+
+extract_bet_reg_26_bet4:
+    addi $t4, $zero, 4278190080
+    and $t2, $26, $t4      # Extract the fourth bet
+    sra $t2, $t2, 24
+    j process_bet
+
+
+extract_bet_reg_27_bet1:
+    # Extract bets from register 27
+    addi $t4, $zero, 255
+    and $t2, $27, $t4  
+     # Extract the first bet
+    j process_bet
+
+extract_bet_reg_27_bet2:
+    addi $t4, $zero, 65280
+    and $t3, $27, $t4      # Extract the second bet
+    sra $t2, $t3, 8
+    j process_bet
+
+extract_bet_reg_27_bet3:
+    addi $t4, $zero, 16711680
+    and $t3, $27, $t4      # Extract the third bet
+    sra $t2, $t3, 16
+    j process_bet
+
+extract_bet_reg_27_bet4:
+    addi $t4, $zero, 4278190080
+    and $t2, $27, $t4      # Extract the fourth bet
+    sra $t2, $t2, 24
     j process_bet
 
 process_bet:
@@ -599,6 +664,7 @@ calculate_payout:
 post_payout:
     # Increment bet counter
     #j post_payout
+    j post_payout
     addi $t0, $t0, 1 
     addi $29, $t0, 0
     blt $t0, $2, update_bet_counts
@@ -607,16 +673,40 @@ post_payout:
 update_bet_counts:
     # Check if all bets in the current register have been processed
     addi $t4, $zero, 3
-    and $t4, $t0, $t4
-    bne $t4, $zero, extract_bets
+    bne $t0, $t4, check_bet2
+    j update_register_counter
 
+
+check_bet2:
+    addi $t4, $zero, 1
+    bne $t0, $t4, check_bet3
+    bne $t1, $zero, extract_bet_reg_26_bet2
+    addi $t4, $zero, 2
+    bne $t1, $t4, extract_bet_reg_27_bet2
+    j extract_from_reg_25_bet2
+
+check_bet3:
+    addi $t4, $zero, 2
+    bne $t0, $t4, check_bet4
+    bne $t1, $zero, extract_bet_reg_26_bet3
+    addi $t4, $zero, 2
+    bne $t1, $t4, extract_bet_reg_27_bet3
+    j extract_from_reg_25_bet3
+
+check_bet4:
+    bne $t1, $zero, extract_bet_reg_26_bet4
+    addi $t4, $zero, 2
+    bne $t1, $t4, extract_bet_reg_27_bet4
+    j extract_from_reg_25_bet4
+
+update_register_counter:
     # Move to the next register
     addi $t1, $t1, 1
+    addi $t0, $zero, 0
     j extract_bets
 
 end_extraction:
     j payout_distribution
-    
 
 post_1:
     addi $s7, $zero, 0      # Initialize a counter in $s0 to 0
@@ -735,8 +825,8 @@ check_amount_100:
 calculate_bet_payout:
     # Check the bet type and calculate the payout accordingly
     addi $t8, $zero, 38
+    j calculate_bet_payout
     blt $t7, $t8, payout_number
-    j payout_special
 
 payout_number:
     # Payout for a number bet

@@ -11,8 +11,6 @@ module regfile(
     output [31:0] register17;
     output [31:0] register16;
     assign register17 = r17; 
-    assign register16 = r16; 
-    assign register6 = r6;
     output [5:0] nonMapped;
     assign nonMapped = r14[5:0];
     assign chipDispense = {r5, r22, r21, r20, r19};
@@ -20,7 +18,7 @@ module regfile(
 	input spin_check, betReceived;
 	input [4:0] ctrl_writeReg, ctrl_readRegA, ctrl_readRegB;
 	input [31:0] data_writeReg;
-	output [5:0] led_number;
+	input [5:0] led_number;
 	output [31:0] data_readRegA, data_readRegB;
 	input [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12; 
 	output [31:0] finalpayout;
@@ -30,13 +28,14 @@ module regfile(
 	output [15:0] LED_mappings;
 	input [4:0] betCount;
 	// add your code here
-	assign led_number = r8[5:0];
+	wire [31:0] rg16;
+	assign rg16[5:0] = led_number;
 	assign finalpayout = r18;
 	assign numproperty = r17[6:0];
 	assign register5 = r5[1];
 	assign register29 = r29[1:0];
 	
-	assign LED_mappings = {r5[0], r18[6:0], r19[1:0], r20[1:0], r21[1:0], r22[1:0]};
+	assign LED_mappings = {r18[7:0], r10[7:0]};
 	//assign LED_mappings[7:0] = {r19[1:0], r20[1:0], r21[1:0], r22[1:0]};
 	//assign LED_mappings[0] = r3[0];
 	wire [31:0] A, B, write;
@@ -68,7 +67,7 @@ module regfile(
 	register reg3(clk, rg3, 1'b1, ctrl_reset, r3);
 	register reg4(clk, rg4, 1'b1, ctrl_reset, r4);
 	register reg5(clk, data_writeReg, write[5], ctrl_reset, r5);
-	register reg6(clk, register6, 1'b1, ctrl_reset, r6);
+	register reg6(clk, data_writeReg, write[6], ctrl_reset, r6);
 	register reg7(clk, data_writeReg, write[7], ctrl_reset, r7);
 	register reg8(clk, data_writeReg, write[8], ctrl_reset, r8);
 	register reg9(clk, data_writeReg, write[9], ctrl_reset, r9);
@@ -78,7 +77,7 @@ module regfile(
 	register reg13(clk, data_writeReg, write[13], ctrl_reset, r13);
 	register reg14(clk, data_writeReg, write[14], ctrl_reset, r14);
 	register reg15(clk, data_writeReg, write[15], ctrl_reset, r15);
-	register reg16(clk, data_writeReg, write[16], 1'b0, r16);
+	register reg16(clk, rg16, 1'b1, 1'b0, r16);
 	register reg17(clk, data_writeReg, write[17], ctrl_reset, r17);
 	register reg18(clk, data_writeReg, write[18], ctrl_reset, r18);
 	register reg19(clk, data_writeReg, write[19], ctrl_reset, r19);
