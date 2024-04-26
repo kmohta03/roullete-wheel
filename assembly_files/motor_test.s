@@ -1,16 +1,16 @@
 
 main:
-    bne $4, $zero, main
+    bne $3, $zero, main
     j open_door
 
 open_door:
-    addi $s3, $zero, 100    # Set duty cycle to 30
+    addi $s3, $zero, 90    # Set duty cycle to 30
     sw $s3, 10($zero)  # Write duty cycle to MMIO address for Motor 5
     addi $s4, $zero, 60000  # Load delay value
     j motor_delay              # Call delay function
 
 close_door:
-    addi $s3, $zero, 0     # Set duty cycle to 0
+    addi $s3, $zero, 40     # Set duty cycle to 0
     sw $s3, 10($zero)  # Write duty cycle to MMIO address for Motor 5
     addi $s4, $zero, 60000
     j main

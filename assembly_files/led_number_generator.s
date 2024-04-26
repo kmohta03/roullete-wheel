@@ -2,12 +2,13 @@
 .globl main
 
 main:
+    bne $4, $zero, spin_initialise
     bne $3, $zero, main
     j open_door
 
-detect_spin: 
-    bne $4, $zero, spin_initialise
-    j main
+#detect_spin: 
+    #bne $4, $zero, spin_initialise
+    #j main
 
 # Simulate the wheel spin
 spin_initialise:
@@ -937,7 +938,7 @@ close_door:
     addi $s3, $zero, 40     # Set duty cycle to 0
     sw $s3, 9($zero)  # Write duty cycle to MMIO address for Motor 5
     addi $s4, $zero, 60000
-    j detect_spin
+    j main
 
 motor_delay:
     # Insert noOps for delay

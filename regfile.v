@@ -25,7 +25,7 @@ module regfile(
 	assign register28 = r8[7:0];
 	assign register29 = r29[1:0];
 	
-	//assign LED_mappings = {r18[7:0], bet1[7:2], betReceived, spin_check};
+	assign LED_mappings = {r18[7:0], bet1[7:3], betReceived, r4[0]};
 	//assign LED_mappings[0] = r3[0];
 	wire [31:0] A, B, write;
 
