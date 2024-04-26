@@ -276,16 +276,17 @@ noOp_done:
 
 get_number:
     addi $t6, $zero, 63
-    bne $s0, $t6, compute_number_properties
+    bne $s0, $t6, slow_down_loop
     j get_number
 
 # # Generate a random number (0-37) for the final LED
 # addi $t6, $zero, 17    # Store the random number in $t6
 
-# addi $t7, $zero, 60000 # Initial delay value
+ 
 
 slow_down_loop:
     # Write the current LED value to memory
+    addi $t7, $zero, 60000 # Initial delay value
     addi $s0, $t0, 0
 
     # Insert noOps for delay
@@ -531,7 +532,7 @@ slow_down_noOp_done:
 
 slow_down_loop_continue:
     # Check if the current LED matches the random number
-    bne $t0, $t6, slow_down_loop
+    #bne $t0, $t6, slow_down_loop
 
     # Write the final LED value to s0
     addi $s0, $t6, 0
@@ -663,8 +664,6 @@ calculate_payout:
 
 post_payout:
     # Increment bet counter
-    #j post_payout
-    j post_payout
     addi $t0, $t0, 1 
     addi $29, $t0, 0
     blt $t0, $2, update_bet_counts
@@ -742,7 +741,7 @@ motor_100:
 post_payout_distribution: 
     #motor control to dispense chips
     addi $5, $zero, 1
-
+    j post_payout_distribution
     j final_loop
 
     # Keep the final LED lit until another spin
@@ -785,11 +784,9 @@ final_loop:
 
 payout_calculation:
     # Store the current bet value in $t6
-    addi $t6, $t2, 0
-
     # Extract the bet type (first 6 bits) into $t7
     addi $t8, $zero, 63    # Mask for extracting first 6 bits
-    and $t7, $t6, $t8
+    and $t7, $t2, $t8
 
     # Check if the bet type is 111110 (terminate payout calculation)
     addi $t8, $zero, 62    # Value for 111110
@@ -798,7 +795,7 @@ payout_calculation:
 
 continue_payout:
     # Extract the bet amount (7th and 8th bits) into $t8
-    sra $t8, $t6, 6
+    sra $t8, $t2, 6
     addi $s7, $zero, 3     # Mask for extracting 7th and 8th bits
     and $t8, $t8, $s7
 
@@ -825,8 +822,8 @@ check_amount_100:
 calculate_bet_payout:
     # Check the bet type and calculate the payout accordingly
     addi $t8, $zero, 38
-    j calculate_bet_payout
     blt $t7, $t8, payout_number
+    j payout_special
 
 payout_number:
     # Payout for a number bet
@@ -1079,13 +1076,13 @@ payout_distribution:
 
 #MOTOR LOGIC
 open_door:
-    addi $s3, $zero, 90    # Set duty cycle to 30
+    addi $s3, $zero, 87    # Set duty cycle to 30
     sw $s3, 9($zero)  # Write duty cycle to MMIO address for Motor 5
     addi $s4, $zero, 60000  # Load delay value
     j motor_delay              # Call delay function
 
 close_door:
-    addi $s3, $zero, 40     # Set duty cycle to 0
+    addi $s3, $zero, 45     # Set duty cycle to 0
     sw $s3, 9($zero)  # Write duty cycle to MMIO address for Motor 5
     addi $s4, $zero, 60000
     j main
