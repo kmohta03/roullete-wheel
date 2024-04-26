@@ -3,8 +3,19 @@ module regfile(
 	ctrl_writeEnable, ctrl_reset, ctrl_writeReg,
 	ctrl_readRegA, ctrl_readRegB, data_writeReg,
 	data_readRegA, data_readRegB, led_number, spin_check,
-	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12, finalpayout, numproperty, register28, register29, LED_mappings, betCount, betReceived);
-
+	bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12, finalpayout, 
+	numproperty, register5, register29, LED_mappings, betCount, betReceived, chipDispense, register6, nonMapped, register17, register16);
+    
+    output [128:0] chipDispense; 
+    input [31:0] register6; 
+    output [31:0] register17;
+    output [31:0] register16;
+    assign register17 = r17; 
+    assign register16 = r16; 
+    assign register6 = r6;
+    output [5:0] nonMapped;
+    assign nonMapped = r14[5:0];
+    assign chipDispense = {r5, r22, r21, r20, r19};
 	input clock, ctrl_writeEnable, ctrl_reset;
 	input spin_check, betReceived;
 	input [4:0] ctrl_writeReg, ctrl_readRegA, ctrl_readRegB;
@@ -14,18 +25,19 @@ module regfile(
 	input [7:0] bet1, bet2, bet3, bet4, bet5, bet6, bet7, bet8, bet9, bet10, bet11, bet12; 
 	output [31:0] finalpayout;
 	output [6:0] numproperty;
-	output [7:0] register28;
+	output register5;
 	output [1:0] register29;
 	output [15:0] LED_mappings;
 	input [4:0] betCount;
 	// add your code here
-	assign led_number = r16[5:0];
+	assign led_number = r8[5:0];
 	assign finalpayout = r18;
 	assign numproperty = r17[6:0];
-	assign register28 = r8[7:0];
+	assign register5 = r5[1];
 	assign register29 = r29[1:0];
 	
-	assign LED_mappings = {r18[7:0], bet1[7:3], betReceived, r4[0]};
+	assign LED_mappings = {r5[0], r18[6:0], r19[1:0], r20[1:0], r21[1:0], r22[1:0]};
+	//assign LED_mappings[7:0] = {r19[1:0], r20[1:0], r21[1:0], r22[1:0]};
 	//assign LED_mappings[0] = r3[0];
 	wire [31:0] A, B, write;
 
@@ -39,7 +51,7 @@ module regfile(
 
 	wire [31:0] r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15, r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31;
 
-	wire [31:0] rg25, rg26, rg27, rg4;
+	wire [31:0] rg25, rg26, rg27, rg4, rg5;
 	assign rg25 = {bet4, bet3, bet2, bet1}; 
 	assign rg26 = {bet8, bet7, bet6, bet5}; 
 	assign rg27 = {bet12, bet11, bet10, bet9};
@@ -56,7 +68,7 @@ module regfile(
 	register reg3(clk, rg3, 1'b1, ctrl_reset, r3);
 	register reg4(clk, rg4, 1'b1, ctrl_reset, r4);
 	register reg5(clk, data_writeReg, write[5], ctrl_reset, r5);
-	register reg6(clk, data_writeReg, write[6], ctrl_reset, r6);
+	register reg6(clk, register6, 1'b1, ctrl_reset, r6);
 	register reg7(clk, data_writeReg, write[7], ctrl_reset, r7);
 	register reg8(clk, data_writeReg, write[8], ctrl_reset, r8);
 	register reg9(clk, data_writeReg, write[9], ctrl_reset, r9);
@@ -66,7 +78,7 @@ module regfile(
 	register reg13(clk, data_writeReg, write[13], ctrl_reset, r13);
 	register reg14(clk, data_writeReg, write[14], ctrl_reset, r14);
 	register reg15(clk, data_writeReg, write[15], ctrl_reset, r15);
-	register reg16(clk, data_writeReg, write[16], ctrl_reset, r16);
+	register reg16(clk, data_writeReg, write[16], 1'b0, r16);
 	register reg17(clk, data_writeReg, write[17], ctrl_reset, r17);
 	register reg18(clk, data_writeReg, write[18], ctrl_reset, r18);
 	register reg19(clk, data_writeReg, write[19], ctrl_reset, r19);

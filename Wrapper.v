@@ -24,13 +24,13 @@
  *
  **/
 
-module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
-	input clock, reset;
+module Wrapper (clock, rst, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
+	input clock, rst;
     output [7:0] JA;
     input [6:0] JB; 
     output [4:0] JC; 
     output [15:0] LED;
-	output [6:0] seg; 
+	output [6:0] seg;
 	output [7:0] AN;
 	inout ps2_clk, ps2_data;
 
@@ -40,7 +40,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 		rData, regA, regB,
 		memAddr, memDataIn, memDataOut;
 
-
+    assign reset = (register5) ? 1'b1 : rst;
 	// ADD YOUR MEMORY FILE HERE
 	localparam INSTR_FILE = "led_number_generator";
 	
@@ -66,7 +66,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 		.dataOut(instData));
 	
 	wire spin_check; 
-	assign spin_check = (reset) ? 1'b0 : (betOpcode == 6'b111110);
+	assign spin_check = (betOpcode == 6'b111110);
 
 	//assign spin_check = 1'b1;
 
@@ -78,16 +78,54 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 
 	wire [6:0] numproperty;
 	wire[1:0] register29;
-	regfile RegisterFile( .clock(clock), 
-		.ctrl_writeEnable(rwe), .ctrl_reset(reset), 
-		.ctrl_writeReg(rd),
-		.ctrl_readRegA(rs1), .ctrl_readRegB(rs2), 
-		.data_writeReg(rData), .data_readRegA(regA), .data_readRegB(regB), .led_number(led_number), .spin_check(spin_check), .bet1(bet1), .bet2(bet2), .bet3(bet3), .bet4(bet4), .bet5(bet5), .bet6(bet6), .bet7(bet7), .bet8(bet8), .bet9(bet9), .bet10(bet10), .bet11(bet11), .bet12(bet12), .finalpayout(finalpayout), 
-		.numproperty(numproperty), .register28(register28), .register29(register29), .LED_mappings(LED), .betCount(betCount[5:1]), .betReceived(latched_value));
+	regfile RegisterFile(
+        .clock(clock),
+        .ctrl_writeEnable(rwe),
+        .ctrl_reset(reset),
+        .ctrl_writeReg(rd),
+        .ctrl_readRegA(rs1),
+        .ctrl_readRegB(rs2),
+        .data_writeReg(rData),
+        .data_readRegA(regA),
+        .data_readRegB(regB),
+        .led_number(led_number),
+        .spin_check(spin_check),
+        .bet1(bet1),
+        .bet2(bet2),
+        .bet3(bet3),
+        .bet4(bet4),
+        .bet5(bet5),
+        .bet6(bet6),
+        .bet7(bet7),
+        .bet8(bet8),
+        .bet9(bet9),
+        .bet10(bet10),
+        .bet11(bet11),
+        .bet12(bet12),
+        .finalpayout(finalpayout),
+        .numproperty(numproperty),
+        .register5(register5),
+        .register29(register29),
+        .LED_mappings(LED),
+        .betCount(betCount[5:1]),
+        .betReceived((latched_value)),
+        .chipDispense(chipDispense),
+        .register6(register6),
+        .nonMapped(nonMapped),
+        .register17(register17),
+        .register16(s0)
+    );
+	wire register5;
+	wire [31:0] s0; 
+	wire [31:0] register17;
 	wire [7:0] register28;
+	wire [31:0] register16;
 	wire [2:0] mux_select_0, mux_select_1, mux_select_2, mux_select_3, mux_select_4, mux_select_5;
 	assign JA = {2'b0, led_number};
-	
+	wire [5:0] nonMapped, finalMapped;
+	wire [31:0] register6;
+	roulette_mapping mipsToArduino (nonMapped, register6[5:0]);
+	roulette_mapping mainMap ( register16[5:0], finalMapped);
 	//assign LED[7:0] = bet1;
 //	assign LED[6:0] = register28;
 //	assign LED[7] = finalpayout;
@@ -114,6 +152,8 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 	wire[2:0] arduinoColor;
 	
 	//wire betReceived = (betOpcode) & (betOpcode != 6'b111110 
+	
+	//assign LED[15:8] = motorposition1;
 
 	assign arduinoColor = {JB[2], JB[1], JB[0]};
 	wire betAmount1, betAmount2;
@@ -137,7 +177,7 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 	// 		ongoingSpin <= 0;
 	// end
 
-	assign betReady = (read_data & betOpcode != (6'b111111 | 6'b111110) & arduinoColor != 3'b001); 
+	assign betReady = (read_data & betOpcode != (6'b111111 | 6'b111110) & arduinoColor != 3'b001 & ~(spin_check)); 
 
 	wire [5:0] betCount;
 	wire count_enable = betReady & !spin_check; //SWITCH BACK WHEN WE DONT WANT COUNTER TO INCREMENT
@@ -174,7 +214,8 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
             end
         end
     end
-    
+    wire [128:0] chipDispense;
+    motor_control Motors(clock, chipDispense[128], chipDispense[31:0], chipDispense[63:32], chipDispense[95:64], chipDispense[127:96], motorposition1, motorposition2, motorposition3, motorposition4);
 	// Latch logic based on the number of bets done
 	always @(posedge clock) begin
 		if (reset) begin
@@ -240,9 +281,9 @@ module Wrapper (clock, reset, JA, JB, JC, LED, ps2_clk, ps2_data, seg, AN);
 		.addr(memAddr[11:0]), 
 		.dataIn(memDataIn), 
 		.dataOut(memDataOut),
-		.motorposition1(motorposition1),
-		.motorposition2(motorposition2),
-		.motorposition3(motorposition3),
-		.motorposition4(motorposition4),
+//		.motorposition1(motorposition1),
+//		.motorposition2(motorposition2),
+//		.motorposition3(motorposition3),
+//		.motorposition4(motorposition4),
 		.chipMotor(chipMotor));
 endmodule

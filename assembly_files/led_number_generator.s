@@ -42,19 +42,19 @@ set_noOps_0:
     j set_noOps_done
 
 set_noOps_1:
-    addi $t2, $zero, 25000
+    addi $t2, $zero, 19000
     j set_noOps_done
 
 set_noOps_2:
-    addi $t2, $zero, 33000
+    addi $t2, $zero, 28000
     j set_noOps_done
 
 set_noOps_3:
-    addi $t2, $zero, 40000
+    addi $t2, $zero, 50000
     j set_noOps_done
 
 set_noOps_4:
-    addi $t2, $zero, 52000
+    addi $t2, $zero, 55000
     j set_noOps_done
 
 set_noOps_5:
@@ -599,7 +599,7 @@ calculate_payout:
 post_payout:
     # Increment bet counter
     #j post_payout
-    addi $t0, $t0, 1
+    addi $t0, $t0, 1 
     addi $29, $t0, 0
     blt $t0, $2, update_bet_counts
     j end_extraction
@@ -615,33 +615,83 @@ update_bet_counts:
     j extract_bets
 
 end_extraction:
-    addi $t8, $zero, 3
-    j end_extraction
+    j payout_distribution
+    
+
+post_1:
+    addi $s7, $zero, 0      # Initialize a counter in $s0 to 0
+    j motor_5
+post_5:
+    addi $s7, $zero, 0      # Initialize a counter in $s0 to 0
+    j motor_25
+post_25:
+    addi $s7, $zero, 0      # Initialize a counter in $s0 to 0
+    j motor_100
+
     # All bets have been processed
     #coin distribution of payout
-    j payout_distribution
+    
+motor_1: 
+    bne  $s3, $s7, dispense_1
+    j post_1
+        
+motor_5:
+    bne  $s4, $s7, dispense_5
+    j post_5
+
+motor_25: 
+    bne  $s4, $s7, dispense_25
+    j post_25
+
+motor_100: 
+    bne  $s4, $s7, dispense_100
+    j post_payout_distribution
+
+
 
 post_payout_distribution: 
     #motor control to dispense chips
+    addi $5, $zero, 1
+
     j final_loop
 
     # Keep the final LED lit until another spin
 final_loop:
-    addi $s0, $t6, 0
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-    #NEED TO ADD REGISTER MAPPED RESET SIGNAL HERE
-
-    bne $4, $zero, spin_initialise
-    j final_loop
+    addi $s0, $s0, 0
+    # Reset registers 1-32 to zero
+    addi $5, $zero, 2
+    addi $1, $zero, 0
+    addi $2, $zero, 0
+    addi $3, $zero, 0
+    addi $4, $zero, 0
+    addi $5, $zero, 0
+    addi $6, $zero, 0
+    addi $7, $zero, 0
+    addi $8, $zero, 0
+    addi $9, $zero, 0
+    addi $10, $zero, 0
+    addi $11, $zero, 0
+    addi $12, $zero, 0
+    addi $13, $zero, 0
+    addi $14, $zero, 0
+    addi $15, $zero, 0
+    addi $16, $zero, 0
+    addi $17, $zero, 0
+    #addi $18, $zero, 0
+    addi $19, $zero, 0
+    addi $20, $zero, 0
+    addi $21, $zero, 0
+    addi $22, $zero, 0
+    addi $23, $zero, 0
+    addi $24, $zero, 0
+    addi $25, $zero, 0
+    addi $26, $zero, 0
+    addi $27, $zero, 0
+    addi $28, $zero, 0
+    addi $29, $zero, 0
+    addi $30, $zero, 0
+    addi $31, $zero, 0
+    j main
 
 payout_calculation:
     # Store the current bet value in $t6
@@ -924,10 +974,20 @@ payout_distribution:
 
     # Calculate the number of 1 chips
     addi $s3, $t1, 0      # $s3 = ((payout % 100) % 25) % 5
+    
+    
+    
+    addi $s7, $zero, 2
+    mul $s6, $s7, $s6
+    mul $s5, $s7, $s5
+    mul $s4, $s7, $s4
+    mul $s3, $s7, $s3
 
     # Payout distribution complete
     j post_payout_distribution 
 
+
+#MOTOR LOGIC
 open_door:
     addi $s3, $zero, 90    # Set duty cycle to 30
     sw $s3, 9($zero)  # Write duty cycle to MMIO address for Motor 5
@@ -948,6 +1008,1914 @@ motor_delay:
 motor_loop:
     bne $s5, $s4, motor_noOp_insert
     j close_door
+
+
+dispense_1:
+    addi $s3, $zero, 98    # Set duty cycle to 30
+    sw $s3, 10($zero)  # Write duty cycle to MMIO address for Motor 5
+    addi $s4, $zero, 60000  # Load delay value
+    j motor_delay_1              # Call delay function
+
+undispense_1:
+    addi $s3, $zero, 2     # Set duty cycle to 0
+    sw $s3, 10($zero)  # Write duty cycle to MMIO address for Motor 5
+    addi $s4, $zero, 60000
+    j motor_1
+
+motor_delay_1:
+    # Insert noOps for delay
+    addi $s5, $zero, 0    # noOp counter
+    j motor_loop_1
+
+motor_loop_1:
+    bne $s5, $s4, motor_noOp_insert_1
+    j undispense_1
+
+
+dispense_5:
+    addi $s3, $zero, 98    # Set duty cycle to 30
+    sw $s3, 11($zero)  # Write duty cycle to MMIO address for Motor 5
+    addi $s4, $zero, 60000  # Load delay value
+    j motor_delay_5             # Call delay function
+
+undispense_5:
+    addi $s3, $zero, 2     # Set duty cycle to 0
+    sw $s3, 11($zero)  # Write duty cycle to MMIO address for Motor 5
+    addi $s4, $zero, 60000
+    j motor_5
+
+motor_delay_5:
+    # Insert noOps for delay
+    addi $s5, $zero, 0    # noOp counter
+    j motor_loop_5
+
+motor_loop_5:
+    bne $s5, $s4, motor_noOp_insert_5
+    j undispense_5
+
+dispense_25:
+    addi $s3, $zero, 98    # Set duty cycle to 30
+    sw $s3, 12($zero)  # Write duty cycle to MMIO address for Motor 5
+    addi $s4, $zero, 60000  # Load delay value
+    j motor_delay_25             # Call delay function
+
+undispense_25:
+    addi $s3, $zero, 2     # Set duty cycle to 0
+    sw $s3, 12($zero)  # Write duty cycle to MMIO address for Motor 5
+    addi $s4, $zero, 60000
+    j motor_25
+
+motor_delay_25:
+    # Insert noOps for delay
+    addi $s5, $zero, 0    # noOp counter
+    j motor_loop_25
+
+motor_loop_25:
+    bne $s5, $s4, motor_noOp_insert_25
+    j undispense_25
+
+dispense_100:
+    addi $s3, $zero, 98    # Set duty cycle to 30
+    sw $s3, 13($zero)  # Write duty cycle to MMIO address for Motor 5
+    addi $s4, $zero, 60000  # Load delay value
+    j motor_delay_100           # Call delay function
+
+undispense_100:
+    addi $s3, $zero, 2     # Set duty cycle to 0
+    sw $s3, 13($zero)  # Write duty cycle to MMIO address for Motor 5
+    addi $s4, $zero, 60000
+    j motor_100
+
+motor_delay_100:
+    # Insert noOps for delay
+    addi $s5, $zero, 0    # noOp counter
+    j motor_loop_100
+
+motor_loop_100:
+    bne $s5, $s4, motor_noOp_insert_100
+    j undispense_100
+
+motor_noOp_insert_100:
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    
+    addi $s5, $s5, 1      # Increment noOp counter
+    j motor_loop_100
+
+
+
+motor_noOp_insert_25:
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    
+    addi $s5, $s5, 1      # Increment noOp counter
+    j motor_loop_25
+
+motor_noOp_insert_5:
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    
+    addi $s5, $s5, 1      # Increment noOp counter
+    j motor_loop_5
+
+motor_noOp_insert_1:
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop 
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop                         
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    
+    addi $s5, $s5, 1      # Increment noOp counter
+    j motor_loop_1 
 
 motor_noOp_insert:
     nop
